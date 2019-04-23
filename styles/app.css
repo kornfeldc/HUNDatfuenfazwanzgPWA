@@ -1,0 +1,80 @@
+#app,
+body,
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.flx {
+  display: flex;
+}
+.flx .col {
+  flex-direction: column;
+}
+.flx .col .vcenter {
+  justify-content: center;
+}
+.flx.vcenter:not(.col) {
+  align-items: center;
+}
+.g1 {
+  flex-grow: 1;
+}
+.f150 {
+  font-size: 150%;
+}
+.f200 {
+  font-size: 200%;
+}
+.p-std {
+  padding: 1em;
+}
+.pl-std {
+  padding-left: 1em;
+}
+.pr-std {
+  padding-right: 1em;
+}
+.pt-std {
+  padding-top: 1em;
+}
+.pb-std {
+  padding-bottom: 1em;
+}
+.px-std {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+.py-std {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.hover {
+  cursor: pointer;
+}
+.hover:hover {
+  background-color: var(--hover-color);
+}
+.above_actions {
+  padding-bottom: 4rem;
+}
+.actions {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  background-color: #EFEFEF;
+  width: 100%;
+  display: flex;
+  height: 4rem;
+  padding: 1em;
+}
+/*materialcss override*/
+/*.col {
+    padding-left:0 !important;
+}*/
+/*bulma override*/
+body.has-navbar-fixed-top,
+html.has-navbar-fixed-top {
+  padding-top: 6.25rem;
+}

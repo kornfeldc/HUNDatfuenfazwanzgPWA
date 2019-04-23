@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="images/icons/favicon.ico" type="image/x-icon">
+  <title>HUNDatfuenfazwang</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  
+  <link rel="stylesheet" href="styles/app.css"/>
+  <link rel="stylesheet" href="styles/colors.css"/>
+  
+</head>
+<body>
+    <div id="app">
+
+        <nav class="navbar is-fixed-top has-shadow" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item">
+                    <img src="images/logo.svg" style="max-height:4.5rem">
+                </a>
+
+                <a class="navbar-item ">
+                    <h3 class="title primary-text is-3">HUNDatfuenfazwanzg</h3>
+                </a>
+
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-end">
+                    <router-link class="navbar-item" to="/sales">Verkauf</router-link>
+                    <router-link class="navbar-item" to="/persons">Personen</router-link>
+                    <router-link class="navbar-item" to="/articles">Artikel</router-link>
+                </div>
+
+            </div>
+        </nav>
+        <router-view></router-view>
+    </div>
+   
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://cdn.jsdelivr.net/pouchdb/5.4.5/pouchdb.min.js"></script>
+
+    <script src="scripts/db/model/_base.js"></script>
+    <script src="scripts/db/model/article.js"></script>
+    <script src="scripts/db/model/person.js"></script>
+    <script src="scripts/db/dbconfig.js"></script>
+    <script src="scripts/db/db.js"></script>
+
+    <script src="scripts/pages/articles.js"></script>
+    <script src="scripts/pages/article.js"></script>
+    <script src="scripts/pages/persons.js"></script>
+    <script src="scripts/pages/person.js"></script>
+    <script src="scripts/pages/sales.js"></script>
+    <script src="scripts/pages/sale.js"></script>
+
+    <script src="scripts/components/person-line.js"></script>
+    <script src="scripts/components/sale-line.js"></script>
+    <script src="scripts/components/article-line.js"></script>
+
+    <script src="scripts/util.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
