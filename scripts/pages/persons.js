@@ -30,7 +30,7 @@ const PersonsPage = {
             });
         },
         open(entry) {
-            router.push({ path: 'person/'+ (entry && entry._id ? entry._id : '_') });
+            router.push({ path: '/person/'+ (entry && entry._id ? entry._id : '_') });
         }
     }
 }

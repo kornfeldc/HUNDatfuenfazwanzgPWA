@@ -23,7 +23,7 @@ const ArticlePage = {
         <div class="field">
             <label class="label">Preis</label>
             <div class="control">
-                <input class="input" type="number" placeholder="Preis" v-model="article.price"/>
+                <input class="input" type="number" placeholder="Preis" v-model="article.price" style="width:100px;text-align:right"/>
             </div>
         </div>
         <div class="field">

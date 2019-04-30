@@ -4,6 +4,7 @@
   --additional-color: #FFD54F;
   --additional_inverse-color: #000000;
   --hover-color: #F0F0F0;
+  --red-color: #eb0120;
 }
 .primary {
   background-color: var(--primary-color);
@@ -22,4 +23,10 @@
 }
 .additional_inverse-text {
   color: var(--additional_inverse-color);
+}
+.red {
+  background-color: var(--red-color);
+}
+.red-text {
+  color: var(--red-color);
 }

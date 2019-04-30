@@ -49,8 +49,23 @@ var db = {
     },
 
     getSales() {
-        return new Promise((resolve, reject) => {
-            resolve([]);
+        return new Promise((resolve,reject) => {
+            saleDb.allDocs({ include_docs: true }).then(docs => {
+
+                var sales = [];
+                docs.rows.forEach(row => { 
+                    var sale = new Sale();
+                    sale.load(row.doc);
+                    sales.push(sale);
+                });
+
+                sales.sort((a,b) => {
+                    //todo
+                    return 0;
+                });
+
+                resolve(sales);
+            });
         });
     }
 };

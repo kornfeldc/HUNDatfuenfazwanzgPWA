@@ -24,8 +24,9 @@
                     <img src="images/logo.svg" style="max-height:4.5rem">
                 </a>
 
-                <a class="navbar-item ">
+                <a class="navbar-item" style="flex-direction: column; align-items: flex-start">
                     <h3 class="title primary-text is-3">HUNDatfuenfazwanzg</h3>
+                    <h5 class="subtitle primary-text is-5">{{$route.meta.title}}</h5>
                 </a>
 
                 <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -53,14 +54,18 @@
     <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
     <script src="https://cdn.jsdelivr.net/pouchdb/5.4.5/pouchdb.min.js"></script>
 
+    <script src="scripts/libs/moment.js"></script>
+
     <script src="scripts/db/model/_base.js"></script>
     <script src="scripts/db/model/article.js"></script>
     <script src="scripts/db/model/person.js"></script>
+    <script src="scripts/db/model/sale.js"></script>
     <script src="scripts/db/dbconfig.js"></script>
     <script src="scripts/db/db.js"></script>
 
     <script src="scripts/pages/articles.js"></script>
     <script src="scripts/pages/article.js"></script>
+    <script src="scripts/pages/pay.js"></script>
     <script src="scripts/pages/persons.js"></script>
     <script src="scripts/pages/person.js"></script>
     <script src="scripts/pages/sales.js"></script>

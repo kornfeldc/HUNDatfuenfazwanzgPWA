@@ -43,10 +43,13 @@ class BaseModel {
         return new Promise(resolve => {
             if(this.doc === null) {
                 //new
+                console.log("save - insert", _this.toObj());
                 _this.db.put(_this.toObj()).then(()=>resolve());
             }
-            else 
+            else {
+                console.log("save - update", _this.toDoc());
                 _this.db.put(_this.toDoc()).then(()=>resolve());
+            }
         }); 
     }
 }

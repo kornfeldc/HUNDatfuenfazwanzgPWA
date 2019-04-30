@@ -8,14 +8,15 @@ if ('serviceWorker' in navigator) {
 //define routes
 const router = new VueRouter({
     routes:  [
-        { path: '/articles', component: ArticlesPage },
-        { path: '/persons', component: PersonsPage },
-        { path: '/sales', component: SalesPage },
-        { path: '/', component: SalesPage },
+        { path: '/articles', component: ArticlesPage, meta: { title:"Artikel" } },
+        { path: '/persons', component: PersonsPage, meta: { title: "Personen" } },
+        { path: '/sales', component: SalesPage, meta: { title: "Verkauf" } },
+        { path: '/', component: SalesPage, meta: { title: "Verkauf" } },
 
-        { path: '/sale/:id', component: SalePage },
-        { path: '/person/:id', component: PersonPage },
-        { path: '/article/:id', component: ArticlePage }
+        { path: '/sale/:id', component: SalePage, meta: { title: "Verkauf" } },
+        { path: '/person/:id', component: PersonPage, meta: { title: "Person" } },
+        { path: '/article/:id', component: ArticlePage, meta: { title:"Artikel" } },
+        { path: '/pay/:id', component: PayPage, meta: { title:"Bezahlen" } }
     ]
 });
 

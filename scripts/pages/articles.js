@@ -30,7 +30,7 @@ const ArticlesPage = {
             });
         },
         open(entry) {
-            router.push({ path: 'article/'+ (entry && entry._id ? entry._id : '_') });
+            router.push({ path: '/article/'+ (entry && entry._id ? entry._id : '_') });
         }
     }
 }
