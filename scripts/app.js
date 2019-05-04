@@ -11,7 +11,9 @@ const router = new VueRouter({
         { path: '/articles', component: ArticlesPage, meta: { title:"Artikel" } },
         { path: '/persons', component: PersonsPage, meta: { title: "Personen" } },
         { path: '/sales', component: SalesPage, meta: { title: "Verkauf" } },
-        { path: '/', component: SalesPage, meta: { title: "Verkauf" } },
+        { path: '/logout', component: LogoutPage, meta: { title: "Logout" } },
+        { path: '/login', component: LoginPage, meta: { title: "Login" } },
+        { path: '/', component: LoginPage, meta: { title: "Login" } },
 
         { path: '/sale/:id', component: SalePage, meta: { title: "Verkauf" } },
         { path: '/person/:id', component: PersonPage, meta: { title: "Person" } },
@@ -26,6 +28,11 @@ const COLOR_PRIMARY = "#1976d2";
 new Vue({
     el: "#app",
     router: router,
+    data() {
+        return {
+            groupTitle: ""
+        };
+    },
     mounted() {
         var app = this;
         app.setThemeColor();

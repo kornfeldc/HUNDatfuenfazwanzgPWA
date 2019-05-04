@@ -1,16 +1,20 @@
 const PersonPage = {
+    mixins: [sessionMixin,mandatoryMixin,utilMixins],
     template: `
-    <div class="p-std">
+        <di^ class="p-std">
+            <div class="field">
+            <label class="label">Vorname</label>
+            <div class="control">
+                <input :class="getInputClass(person,'firstName')" type="text" placeholder="Vorname" v-model="person.firstName"/>
+            </div>
+            <p class="help is-danger" v-if="!hasValue(person,'firstName')">
+                Bitte ausfüllen
+            </p>
+        </div>
         <div class="field">
             <label class="label">Nachname</label>
             <div class="control">
                 <input class="input" type="text" placeholder="Nachname" v-model="person.lastName"/>
-            </div>
-        </div>
-        <div class="field">
-            <label class="label">Vorname</label>
-            <div class="control">
-                <input class="input" type="text" placeholder="Vorname" v-model="person.firstName"/>
             </div>
         </div>
         <div class="field">
@@ -20,11 +24,30 @@ const PersonPage = {
             </div>
         </div>
         <div class="field">
-            <label class="checkbox">
-                <input type="checkbox" v-model="person.isMember">
-                Ist Mitglied
-            </label>
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" v-model="person.isMember">
+                    Ist Mitglied
+                </label>
+            </div>
         </div>
+        <div class="field">
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" v-model="isPersonGroup">
+                    Zusammenhängende Personen
+                </label>
+            </div>
+        </div>
+        <div class="field" v-if="isPersonGroup">
+            <div class="control">
+                <input :class="getInputClass(person,'personGroup')" type="text" placeholder="Personengruppe" v-model="person.personGroup"/>
+            </div>
+            <p class="help is-danger" v-if="!hasValue(person,'personGroup')">
+                Bitte ausfüllen
+            </p>
+        </div>
+        <div class="pt-1">&nbsp;</div>
         <div class="field is-grouped">
             <div class="control">
                 <button class="button is-link" @click="save">Speichern</button>
@@ -37,7 +60,8 @@ const PersonPage = {
     `,
     data() {
         return {
-            person: {}
+            person: {},
+            isPersonGroup: false
         };
     },
     mounted() {
@@ -47,18 +71,18 @@ const PersonPage = {
     methods: {
         load() {
             var app = this;
-            if(app.$route.params.id !== "_") {
-                db.getPersons().then(persons => {
-                    var p = persons.find(person => person._id === app.$route.params.id);
-                    app.person = p;
+            if(app.$route.params.id !== "_") 
+                Person.get(app.$route.params.id).then(person => { 
+                    app.person = person;
+                    app.isPersonGroup = app.person.personGroup && app.person.personGroup.length > 0;
                 });
-            }
             else 
                 app.person = new Person();
         },
         save() {
             var app = this;
             app.person.save().then(()=> {
+                Person.correctPersons();
                 router.push({ path: "/persons" });
             });
         },

@@ -1,10 +1,11 @@
-Vue.component('article-line', { 
+Vue.component('sale-line', { 
+    mixins: [utilMixins],
     template:`
     <div class="columns is-mobile is-vcentered hover" @click="$emit('click');">
-        {{article}}
+        {{sale.person.nameWithGroup}}
     </div>
     `,
     props: {
-        article: { type: Object }
+        sale: { type: Object }
     }
  });

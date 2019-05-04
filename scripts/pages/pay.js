@@ -1,5 +1,5 @@
-
 const PayPage = {
+    mixins: [sessionMixin,utilMixins],
     template: `
     <div class="p-std">
         <div class="above_actions">
@@ -29,12 +29,8 @@ const PayPage = {
     methods: {
         load() {
             var app = this;
-            if(app.$route.params.id !== "_") {
-                db.getSales().then(sales => {
-                    var s = sales.find(sale => sale._id === app.$route.params.id);
-                    app.sale = s;
-                });
-            }
+            if(app.$route.params.id !== "_") 
+                Sale.get(app.$route.params.id).then(sale => app.sale=sale);
             else
                 router.push({ path: "/sales" });
         },
@@ -46,6 +42,7 @@ const PayPage = {
             });
         },
         cancel() {
+            var app = this;
             router.push({ path: "/sale/"+app.sale._id });
         }
     }

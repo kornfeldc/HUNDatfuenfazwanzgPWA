@@ -1,4 +1,5 @@
 Vue.component('person-line', { 
+    mixins: [utilMixins],
     template:`
     <div class="columns is-mobile is-vcentered hover" @click="$emit('click');">
         <div class="column">

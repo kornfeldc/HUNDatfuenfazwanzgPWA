@@ -1,4 +1,5 @@
 const PersonsPage = {
+    mixins: [sessionMixin,utilMixins],
     template: `
     <div class="p-std">
         <div class="above_actions">
@@ -25,7 +26,7 @@ const PersonsPage = {
     methods: {
         load() {
             var app = this;
-            db.getPersons().then(persons => {
+            Person.getList().then(persons => {
                 app.persons = persons;      
             });
         },

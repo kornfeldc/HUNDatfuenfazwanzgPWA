@@ -9,10 +9,10 @@ html {
 .flx {
   display: flex;
 }
-.flx .col {
+.flx.col {
   flex-direction: column;
 }
-.flx .col .vcenter {
+.flx.col.vcenter {
   justify-content: center;
 }
 .flx.vcenter:not(.col) {
@@ -50,6 +50,29 @@ html {
   padding-top: 1em;
   padding-bottom: 1em;
 }
+.m-std {
+  margin: 1em;
+}
+.ml-std {
+  margin-left: 1em;
+}
+.mr-std {
+  margin-right: 1em;
+}
+.mt-std {
+  margin-top: 1em;
+}
+.mb-std {
+  margin-bottom: 1em;
+}
+.mx-std {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+.my-std {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
 .hover {
   cursor: pointer;
 }
@@ -68,6 +91,13 @@ html {
   display: flex;
   height: 4rem;
   padding: 1em;
+}
+.scroller {
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 /*materialcss override*/
 /*.col {

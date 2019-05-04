@@ -1,4 +1,5 @@
 Vue.component('article-line', { 
+    mixins: [utilMixins],
     template:`
     <div class="columns is-mobile is-vcentered hover" @click="$emit('click');">
         <div class="column is-narrow">
@@ -8,7 +9,7 @@ Vue.component('article-line', {
             <h4 class="title is-4">{{article.title}}</h4>
         </div>
         <div class="column is-narrow">
-            <div>{{article.price}}</div>
+            <div>{{vutil.format(article.price)}}</div>
         </div>
     </div>
     `,

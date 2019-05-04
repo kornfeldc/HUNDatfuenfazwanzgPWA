@@ -1,4 +1,5 @@
 const ArticlesPage = {
+    mixins: [sessionMixin,utilMixins],
     template: `
     <div class="p-std">
         <div class="above_actions">
@@ -25,7 +26,7 @@ const ArticlesPage = {
     methods: {
         load() {
             var app = this;
-            db.getArticles().then(articles => {
+            Article.getList().then(articles => {
                 app.articles = articles;    
             });
         },

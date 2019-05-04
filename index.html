@@ -26,7 +26,8 @@
 
                 <a class="navbar-item" style="flex-direction: column; align-items: flex-start">
                     <h3 class="title primary-text is-3">HUNDatfuenfazwanzg</h3>
-                    <h5 class="subtitle primary-text is-5">{{$route.meta.title}}</h5>
+                    <h5 class="subtitle primary-text is-5" v-if="groupTitle">{{groupTitle}} - {{$route.meta.title}}</h5>
+                    <h5 class="subtitle primary-text is-5" v-if="!groupTitle">{{$route.meta.title}}</h5>
                 </a>
 
                 <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -38,9 +39,12 @@
 
             <div id="navbarBasicExample" class="navbar-menu">
                 <div class="navbar-end">
-                    <router-link class="navbar-item" to="/sales">Verkauf</router-link>
-                    <router-link class="navbar-item" to="/persons">Personen</router-link>
-                    <router-link class="navbar-item" to="/articles">Artikel</router-link>
+                    <template v-show="groupTitle">
+                        <router-link class="navbar-item" to="/sales">Verkauf</router-link>
+                        <router-link class="navbar-item" to="/persons">Personen</router-link>
+                        <router-link class="navbar-item" to="/articles">Artikel</router-link>
+                        <router-link class="navbar-item" to="/logout">Ausloggen</router-link>
+                    </template>
                 </div>
 
             </div>
@@ -55,6 +59,8 @@
     <script src="https://cdn.jsdelivr.net/pouchdb/5.4.5/pouchdb.min.js"></script>
 
     <script src="scripts/libs/moment.js"></script>
+    
+    <script src="scripts/util.js"></script>
 
     <script src="scripts/db/model/_base.js"></script>
     <script src="scripts/db/model/article.js"></script>
@@ -63,8 +69,12 @@
     <script src="scripts/db/dbconfig.js"></script>
     <script src="scripts/db/db.js"></script>
 
+    <script src="scripts/mixins/mixins.js"></script>
+
     <script src="scripts/pages/articles.js"></script>
     <script src="scripts/pages/article.js"></script>
+    <script src="scripts/pages/login.js"></script>
+    <script src="scripts/pages/logout.js"></script>
     <script src="scripts/pages/pay.js"></script>
     <script src="scripts/pages/persons.js"></script>
     <script src="scripts/pages/person.js"></script>
@@ -72,9 +82,14 @@
     <script src="scripts/pages/sale.js"></script>
 
     <script src="scripts/components/person-line.js"></script>
+    <script src="scripts/components/sale-article-line.js"></script>
     <script src="scripts/components/sale-line.js"></script>
     <script src="scripts/components/article-line.js"></script>
+    <script src="scripts/components/modal-article-chooser.js"></script>
+    <script src="scripts/components/modal-person-chooser.js"></script>
+    <script src="scripts/components/search.js"></script>
+    <script src="scripts/components/sale-person.js"></script>
 
-    <script src="scripts/util.js"></script>
+    
     <script src="scripts/app.js"></script>
 </body>

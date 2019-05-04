@@ -1,17 +1,21 @@
 const ArticlePage = {
+    mixins: [sessionMixin,mandatoryMixin,utilMixins],
     template: `
     <div class="p-std">
         <div class="field">
             <label class="label">Bezeichnung</label>
             <div class="control">
-                <input class="input" type="text" placeholder="Bezeichnung" v-model="article.title"/>
+                <input :class="getInputClass(article,'title')" type="text" placeholder="Bezeichnung" v-model="article.title"/>
             </div>
+            <p class="help is-danger" v-if="!hasValue(article,'title')">
+                Bitte ausfüllen
+            </p>
         </div>
         <div class="field">
             <label class="label">Art</label>
             <div class="control">
                 <div class="select">
-                    <select v-model="article.type">
+                    <select v-model="article.type" :class="getInputClass(article,'type')">
                         <option value="alcoholic">Getränk - Alkoholisch</option>
                         <option value="nonalcoholic">Getränk - Antialkoholisch</option>
                         <option value="snack">Snack</option>
@@ -19,12 +23,18 @@ const ArticlePage = {
                     </select>
                 </div>
             </div>
+            <p class="help is-danger" v-if="!hasValue(article,'type')">
+                Bitte ausfüllen
+            </p>
         </div>
         <div class="field">
             <label class="label">Preis</label>
             <div class="control">
-                <input class="input" type="number" placeholder="Preis" v-model="article.price" style="width:100px;text-align:right"/>
+                <input :class="getInputClass(article,'price')" type="number" placeholder="Preis" v-model="article.price" style="width:100px;text-align:right"/>
             </div>
+            <p class="help is-danger" v-if="!hasValue(article,'price')">
+                Bitte ausfüllen
+            </p>
         </div>
         <div class="field">
             <label class="checkbox">
@@ -54,12 +64,8 @@ const ArticlePage = {
     methods: {
         load() {
             var app = this;
-            if(app.$route.params.id !== "_") {
-                db.getArticles().then(articles => {
-                    var a = articles.find(article => article._id === app.$route.params.id);
-                    app.article = a;
-                });
-            }
+            if(app.$route.params.id !== "_") 
+                Article.get(app.$route.params.id).then(article => app.article = article);
             else 
                 app.article = new Article();
         },
