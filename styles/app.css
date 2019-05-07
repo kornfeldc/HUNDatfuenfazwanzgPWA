@@ -24,8 +24,19 @@ html {
 .f150 {
   font-size: 150%;
 }
+.f180 {
+  font-size: 180%;
+}
 .f200 {
   font-size: 200%;
+}
+.p-0 {
+  padding: 0;
+}
+@media (max-width: 600px) {
+  .p-m0 {
+    padding: 0;
+  }
 }
 .p-std {
   padding: 1em;
@@ -107,4 +118,8 @@ html {
 body.has-navbar-fixed-top,
 html.has-navbar-fixed-top {
   padding-top: 6.25rem;
+}
+.nli .navbar-item.link,
+.nli .navbar-burger {
+  display: none;
 }

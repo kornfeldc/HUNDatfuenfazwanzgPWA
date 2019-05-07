@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, user-scalable=no"/>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="images/icons/favicon.ico" type="image/x-icon">
   <title>HUNDatfuenfazwang</title>
@@ -16,21 +16,20 @@
   
 </head>
 <body>
-    <div id="app">
-
+    <div id="app" :class="(!isLoggedIn || !groupTitle ? 'nli' : '')">
         <nav class="navbar is-fixed-top has-shadow" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
-                <a class="navbar-item">
+                <a class="navbar-item" style="padding-right:0">
                     <img src="images/logo.svg" style="max-height:4.5rem">
                 </a>
 
                 <a class="navbar-item" style="flex-direction: column; align-items: flex-start">
-                    <h3 class="title primary-text is-3">HUNDatfuenfazwanzg</h3>
+                    <h3 class="title primary-text is-4" style="padding-top:10px">HUNDatfuenfazwanzg</h3>
                     <h5 class="subtitle primary-text is-5" v-if="groupTitle">{{groupTitle}} - {{$route.meta.title}}</h5>
                     <h5 class="subtitle primary-text is-5" v-if="!groupTitle">{{$route.meta.title}}</h5>
                 </a>
 
-                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <a style="margin-top:7px" role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
@@ -39,11 +38,11 @@
 
             <div id="navbarBasicExample" class="navbar-menu">
                 <div class="navbar-end">
-                    <template v-show="groupTitle">
-                        <router-link class="navbar-item" to="/sales">Verkauf</router-link>
-                        <router-link class="navbar-item" to="/persons">Personen</router-link>
-                        <router-link class="navbar-item" to="/articles">Artikel</router-link>
-                        <router-link class="navbar-item" to="/logout">Ausloggen</router-link>
+                    <template>
+                        <router-link class="navbar-item link" to="/sales" v-show="isLoggedIn">Verkauf</router-link>
+                        <router-link class="navbar-item link" to="/persons" v-show="isLoggedIn">Personen</router-link>
+                        <router-link class="navbar-item link" to="/articles" v-show="isLoggedIn">Artikel</router-link>
+                        <router-link class="navbar-item link" to="/logout" v-show="isLoggedIn">Ausloggen</router-link>
                     </template>
                 </div>
 
@@ -59,6 +58,7 @@
     <script src="https://cdn.jsdelivr.net/pouchdb/5.4.5/pouchdb.min.js"></script>
 
     <script src="scripts/libs/moment.js"></script>
+    <script src="scripts/libs/thenBy.min.js"></script>
     
     <script src="scripts/util.js"></script>
 
@@ -86,7 +86,9 @@
     <script src="scripts/components/sale-line.js"></script>
     <script src="scripts/components/article-line.js"></script>
     <script src="scripts/components/modal-article-chooser.js"></script>
+    <script src="scripts/components/modal-day-chooser.js"></script>
     <script src="scripts/components/modal-person-chooser.js"></script>
+    <script src="scripts/components/modal-yesno.js"></script>
     <script src="scripts/components/search.js"></script>
     <script src="scripts/components/sale-person.js"></script>
 

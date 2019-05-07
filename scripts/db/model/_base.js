@@ -52,4 +52,8 @@ class BaseModel {
             }
         }); 
     }
+
+    remove() {
+        return this.db.remove(this.doc);
+    }
 }

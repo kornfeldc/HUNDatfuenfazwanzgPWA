@@ -1,7 +1,7 @@
 const PersonPage = {
     mixins: [sessionMixin,mandatoryMixin,utilMixins],
     template: `
-        <di^ class="p-std">
+        <div class="p-std">
             <div class="field">
             <label class="label">Vorname</label>
             <div class="control">

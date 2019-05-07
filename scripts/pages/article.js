@@ -16,10 +16,7 @@ const ArticlePage = {
             <div class="control">
                 <div class="select">
                     <select v-model="article.type" :class="getInputClass(article,'type')">
-                        <option value="alcoholic">Getränk - Alkoholisch</option>
-                        <option value="nonalcoholic">Getränk - Antialkoholisch</option>
-                        <option value="snack">Snack</option>
-                        <option value="credit">Guthaben</option>
+                        <option v-for="at in articleTypes" :value="at.id">{{at.title}}</option>
                     </select>
                 </div>
             </div>
@@ -54,7 +51,8 @@ const ArticlePage = {
     `,
     data() {
         return {
-            article: {}
+            article: {},
+            articleTypes: Article.getTypes()
         };
     },
     mounted() {

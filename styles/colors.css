@@ -5,6 +5,7 @@
   --additional_inverse-color: #000000;
   --hover-color: #F0F0F0;
   --red-color: #eb0120;
+  --warning-color: #f57f17;
 }
 .primary {
   background-color: var(--primary-color);
@@ -29,4 +30,7 @@
 }
 .red-text {
   color: var(--red-color);
+}
+.warning-text {
+  color: var(--warning-color);
 }

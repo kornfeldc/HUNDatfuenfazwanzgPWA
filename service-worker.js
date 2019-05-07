@@ -11,7 +11,7 @@ if (workbox) {
   }
 
   cacheFirst([
-    'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css‚‚',
+    'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css',
     'https://use.fontawesome.com/releases/v5.8.1/css/all.css', 
     'https://code.jquery.com/jquery-3.4.0.min.js',
     'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',

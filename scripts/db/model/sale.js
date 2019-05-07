@@ -34,7 +34,25 @@ class Sale extends BaseModel {
     }
 
     get isPayed() {
-        return this.payDate != null;
+        return this.payDate !== null;
+    }
+
+    get isToday() {
+        return this.saleDateDay  === moment().format("DD.MM.YYYY");
+    }
+
+    get salePayDateDay() {
+        if(this.payDate !== null)
+            return moment(this.payDate,"DD.MM.YYYY HH:mm:SS").format("DD.MM.YYYY");
+        return "";
+    }
+
+    get saleDateDay() {
+        return moment(this.saleDate,"DD.MM.YYYY HH:mm:SS").format("DD.MM.YYYY");
+    }
+
+    get saleDateAsNr() {
+        return parseInt(moment(this.saleDate, "DD.MM.YYYY HH:mm:ss").format("YYYYMMDD"),10);
     }
 
     static getList() {
@@ -43,8 +61,78 @@ class Sale extends BaseModel {
         });
     }
 
+    static getListFiltered(filter) {
+        var _this = this;
+        return new Promise((resolve,reject) => {
+            _this.getList().then(allSales => {
+
+                if(filter.day === moment().format("DD.MM.YYYY")) {
+                    //toda: get all opened + all done for today
+                    allSales = allSales.filter(sale =>
+                        !sale.isPayed || (sale.saleDateDay === filter.day || sale.salePayDateDay == filter.day)
+                    );
+                }
+                else 
+                    allSales = allSales.filter(sale => sale.saleDateDay === filter.day);
+
+                _this.sortSales(allSales);
+                _this.addSpecialProperties(allSales);
+
+                resolve(allSales);
+            });
+        });
+    }
+
+    static sortSales(sales) {
+        //sort: opened, day, name
+        sales.sort(
+            firstBy("isPayed")
+            .thenBy("saleDateAsNr",-1)
+            .thenBy("person.NameWithGroup")
+        );
+    }
+
+    static addSpecialProperties(sales) {
+        for(var i = 0; i < sales.length; i++) {
+            if(!sales[i].isPayed && i == 0)
+                sales[i].isFirstUnpayed = true;
+            if(sales[i].isPayed && (i == 0 || !sales[i-1].isPayed))
+                sales[i].isFirstPayed = true;
+        }
+    }
+
     static get(id) {
         return Db.getEntity(DbConfig.saleDb, Sale, id);
+    }
+
+    static getDayList() {
+        var _this = this;
+        return new Promise((resolve,reject) => {
+            _this.getList().then(allSales => {
+                var dayList = [];
+
+                allSales.forEach(sale => {
+                    var dayEntry = dayList.find(de => de.day === sale.saleDateDay);
+                    if(!dayEntry) {
+                        dayEntry = {
+                            day: sale.saleDateDay,
+                            dayNr: sale.saleDateAsNr,
+                            dayText: moment(sale.saleDateDay,"DD.MM.YYYY").format("dd, DD.MM.YYYY"),
+                            topay: sale.isPayed ? 0 : sale.articleSum,
+                            payed: sale.isPayed ? sale.articleSum : 0
+                        };
+                        dayList.push(dayEntry);
+                    }
+                    else {
+                        dayEntry.topay += sale.isPayed ? 0 : sale.articleSum;
+                        dayEntry.payed += sale.isPayed ? sale.articleSum : 0;
+                    }
+                });
+
+                dayList.sort(firstBy("dayNr",-1));
+                resolve(dayList);
+            });
+        });
     }
 
 }

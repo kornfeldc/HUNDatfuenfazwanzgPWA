@@ -15,10 +15,14 @@ var mandatoryMixin = {
 
 var sessionMixin = {
     created() {
-        if(!DbConfig.isLoggedIn())
+        if(!DbConfig.isLoggedIn()) {
+            this.$parent.isLoggedIn = false;
             router.push({path: "/login"});
-        else
+        }
+        else {
+            this.$parent.isLoggedIn = true;
             this.$parent.groupTitle = DbConfig.getGroupInfo().title;
+        }
     }
 }
 

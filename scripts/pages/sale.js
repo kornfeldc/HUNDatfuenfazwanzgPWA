@@ -8,9 +8,9 @@ const SalePage = {
             <div class="box">
                 <div class="media p-1">
                     <div class="media-content">
-                        Summe <button class="ml-std button is-small is-outlined is-link" @click="addArticles">Artikel hinzufügen</button>
+                        Summe <button class="ml-std button is-small is-outlined is-link" @click="addArticles" v-if="!sale.isPayed">Artikel hinzufügen</button>
                     </div>
-                    <div class="media-right title is-4">
+                    <div class="media-right title is-5">
                         {{format(sale.articleSum)}}
                     </div>
                 </div>
@@ -28,8 +28,14 @@ const SalePage = {
                 <div class="control">
                     <button class="button is-link" @click="save">OK</button>
                 </div>
-                <div class="control">
+                <div class="control" v-if="sale.articleSum != 0 && !sale.isPayed">
                     <button class="button is-success" @click="pay">Zahlen</button>
+                </div>
+                <div class="control" v-if="sale.articleSum != 0 && person.credit >= sale.articleSum && !sale.isPayed">
+                    <button class="button is-success is-outlined" @click="payWCredit">Alles mit Guthaben zahlen</button>
+                </div>
+                <div class="control">
+                    <button class="button is-danger is-outlined" @click="remove">Löschen</button>
                 </div>
                 <div class="control">
                     <button class="button is-text" @click="cancel">Abbrechen</button>
@@ -38,6 +44,7 @@ const SalePage = {
         </div>
         <modal-person-chooser ref="personChooser"/>
         <modal-article-chooser ref="articleChooser" :sale="sale"/>
+        <modal-yesno ref="yesNoRemove" title="Verkauf löschen" text="Soll dieser Verkauf wirklich gelöscht werden?"/>
     </div>
     `,
     data() {
@@ -67,6 +74,7 @@ const SalePage = {
                         app.sale = new Sale();
                         app.person = person;
                         app.sale.setPerson(person);
+                        app.addArticles();
                     }, 
                     //nothing selected:
                     () => router.push({ path: "/sales" }) 
@@ -98,14 +106,27 @@ const SalePage = {
         },
         save() {
             var app = this;
-            app.sale.save().then(()=> {
-                router.push({ path: "/sales" });
-            });
+            if(app.sale.isPayed)
+                app.cancel();
+            else {
+                app.sale.save().then(()=> {
+                    router.push({ path: "/sales" });
+                });
+            }
         },
         pay() {
             var app = this;
             app.sale.save().then(()=> {
                 router.push({ path: "/pay/" + app.sale._id });
+            });
+        },
+        payWCredit() {
+            alert("Todo");
+        },
+        remove() {
+            var app = this;
+            app.$refs.yesNoRemove.open().then(() => {
+                app.sale.remove().then(() => router.push({ path: "/sales" }));
             });
         },
         cancel() {

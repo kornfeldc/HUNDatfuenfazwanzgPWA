@@ -52,6 +52,9 @@ class DbConfig {
 
     static checkDb(url, email) {
         return new Promise((resolve,reject) => {
+            if(url.substr(url.length-2,1) !== "/")
+                url+="/";
+                
             DbConfig.remoteGroupDb = new PouchDB(`${url}${DbConfig.GROUPDBNAME}`);
             DbConfig.groupDb.sync(DbConfig.remoteGroupDb).on("complete", () => {
                 console.log("synced");

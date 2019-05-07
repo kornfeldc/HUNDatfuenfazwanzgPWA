@@ -4,7 +4,7 @@ Vue.component('sale-person', {
     <div class="box">
         <div class="media">
             <div class="media-content">
-                <p class="title is-4">{{person.nameWithGroup}}</p>
+                <p class="title is-5">{{person.nameWithGroup}}</p>
             </div>
             <div class="media-right">
                 {{sale.saleDayShort}}

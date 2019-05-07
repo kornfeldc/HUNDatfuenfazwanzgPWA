@@ -9,7 +9,13 @@ Vue.component('modal-article-chooser', {
                 <button class="delete" aria-label="close" @click="cancel"></button>
             </header>
             <section class="modal-card-body" v-if="render">
-                <sale-article-line v-for="article in articles" :article="article" :sale="sale" :key="article._id" @modify="(article,amount)=>modify(article,amount)"/>
+                <div class="tabs">
+                    <ul>
+                        <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="tab = 'favorites'">Favoriten</a></li>
+                        <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="tab = at.id">{{at.shortTitle}}</a></li>
+                    </ul>
+                </div>
+                <sale-article-line v-for="article in articles" :article="article" v-show="showArticle(article)" :sale="sale" :key="article._id" @modify="(article,amount)=>modify(article,amount)"/>
             </section>
             <footer class="modal-card-foot">
                 <button class="button is-link" @click="ok">OK</button>
@@ -23,6 +29,10 @@ Vue.component('modal-article-chooser', {
     },
     data() {
         return {
+            resolve: null,
+            reject: null,
+            articleTypes: Article.getTypes(),
+            tab: "favorites",
             articles: [],
             modifications: [],
             render: true
@@ -31,6 +41,8 @@ Vue.component('modal-article-chooser', {
     methods: {
         open() {
             var app = this;
+            app.tab = "favorites";
+
             Article.getList().then(articles => {
                 app.articles = articles;
                 $(app.$refs.modal).addClass("is-active");
@@ -54,6 +66,12 @@ Vue.component('modal-article-chooser', {
                 app.resolve = resolve;
                 app.reject = reject;
             });
+        },
+        showArticle(article) {
+            var app = this;
+            if(app.tab === "favorites" && article.isFavorite)
+                return true;
+            return app.tab === article.type;
         },
         modify(article,amount) {
             var app = this;

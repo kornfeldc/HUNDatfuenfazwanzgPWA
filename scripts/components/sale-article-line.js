@@ -2,22 +2,19 @@ Vue.component('sale-article-line', {
     mixins: [utilMixins],
     template:`
     <div class="columns is-mobile is-vcentered hover" @click="click">
-        <div class="column is-narrow" v-if="article.isFavorite !== undefined">
-            <i :class="'fa fa-heart f200 ' + ( article.isFavorite ? 'red-text' : 'has-text-grey-lighter' )"/>
-        </div>
         <div class="column">
-            <h4 class="title is-4">{{article.title}}</h4>
+            <h4 class="title is-5">{{article.title}}</h4>
         </div>
-        <div class="column is-narrow">
-            <button class="button is-rounded is-success" @click="modify(1)">+</button>
-        </div>
-        <div class="column is-narrow" style="width:50px;text-align:center">
-            {{amount}}
-        </div>
-        <div class="column is-narrow">
+        <div class="column is-narrow p-m0" v-if="!sale.isPayed">
             <button class="button is-rounded is-danger" @click="modify(-1)">-</button>
         </div>
-        <div class="column is-narrow" style="width:80px;text-align:right">
+        <div class="column is-narrow p-m0" style="width:45px;text-align:center">
+            {{amount}}x
+        </div>
+        <div class="column is-narrow p-m0" v-if="!sale.isPayed">
+            <button class="button is-rounded is-success" @click="modify(1)">+</button>
+        </div>
+        <div class="column is-narrow" style="width:60px;text-align:right">
             <template v-if="mode!=='sale'">
                 {{format(article.price)}}
             </template>

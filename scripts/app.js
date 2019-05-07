@@ -1,7 +1,7 @@
 //start service worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
-        .register('../service-worker.js')
+        .register('service-worker.js')
         .then(function() { console.log('Service Worker Registered'); });
 }
 
@@ -30,13 +30,21 @@ new Vue({
     router: router,
     data() {
         return {
-            groupTitle: ""
+            groupTitle: "",
+            isLoggedIn: false
         };
+    },
+    computed: {
+        
     },
     mounted() {
         var app = this;
+        moment.locale("de");
         app.setThemeColor();
         app.initializeNavigation();
+    },
+    updated() {
+        var app = this;
     },
     methods: {
         initializeNavigation() {

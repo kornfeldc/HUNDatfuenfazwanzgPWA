@@ -8,8 +8,12 @@ class Article extends BaseModel {
         this.map = ["title", "type", "price", "isFavorite"];
     }
 
-    get validTypes() {
-        return ["alcoholic","nonalcoholoc","snack", "credit"];
+    static getTypes() {
+        return [
+            { id: "alcoholic", title: "Getränk - Alkoholisch", shortTitle: "Alkoholisch" },
+            { id: "nonalcoholic", title: "Getränk - Antialkoholisch", shortTitle: "Antialkoholisch" },
+            { id: "snack", title: "Snack", shortTitle: "Snacks" }
+        ];
     }
 
     static getList() {
