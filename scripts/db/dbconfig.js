@@ -40,10 +40,15 @@ class DbConfig {
 
     static isLoggedIn() {
         var groupInfo = DbConfig.getGroupInfo();
+        return groupInfo && groupInfo.db && groupInfo.db.length > 0;
+    } 
+
+    static getLoggedIn(params) {
+        var groupInfo = DbConfig.getGroupInfo();
         var loggedIn = groupInfo && groupInfo.db && groupInfo.db.length > 0;
-        if(loggedIn)
-            DbConfig.initDb();
-        return loggedIn;
+        if(loggedIn) 
+            return DbConfig.initDb();
+        return null;
     } 
 
     static getGroupInfo() {
@@ -80,21 +85,36 @@ class DbConfig {
     }
 
     static initDb() {
-        if(DbConfig.personDb === null && DbConfig.getGroupInfo()) {
-            var groupInfo = DbConfig.getGroupInfo();
-            
-            DbConfig.personDb = new PouchDB(`${groupInfo.db}-${DbConfig.PERSONDBNAME}`);
-            DbConfig.articleDb = new PouchDB(`${groupInfo.db}-${DbConfig.ARTICLEDBNAME}`);
-            DbConfig.saleDb = new PouchDB(`${groupInfo.db}-${DbConfig.SALEDBNAME}`);
-            
-            DbConfig.remotePersonDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.PERSONDBNAME}`)
-            DbConfig.remoteArticleDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ARTICLEDBNAME}`)
-            DbConfig.remoteSaleDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.SALEDBNAME}`)
+        return new Promise((resolve,reject) => {
 
-            DbConfig.personDb.sync(DbConfig.remotePersonDb,{ live: true});
-            DbConfig.articleDb.sync(DbConfig.remoteArticleDb,{ live: true});
-            DbConfig.saleDb.sync(DbConfig.remoteSaleDb,{ live: true});
-        }
+            if(DbConfig.personDb === null && DbConfig.getGroupInfo()) {
+                var groupInfo = DbConfig.getGroupInfo();
+                
+                DbConfig.personDb = new PouchDB(`${groupInfo.db}-${DbConfig.PERSONDBNAME}`);
+                DbConfig.articleDb = new PouchDB(`${groupInfo.db}-${DbConfig.ARTICLEDBNAME}`);
+                DbConfig.saleDb = new PouchDB(`${groupInfo.db}-${DbConfig.SALEDBNAME}`);
+                
+                DbConfig.remotePersonDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.PERSONDBNAME}`)
+                DbConfig.remoteArticleDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ARTICLEDBNAME}`)
+                DbConfig.remoteSaleDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.SALEDBNAME}`)
+
+                DbConfig.personDb.sync(DbConfig.remotePersonDb).on("complete", () => {
+                    DbConfig.articleDb.sync(DbConfig.remoteArticleDb).on("complete", () => {
+                        DbConfig.saleDb.sync(DbConfig.remoteSaleDb).on("complete", () => {
+
+                            //setup live sync
+                            DbConfig.personDb.sync(DbConfig.remotePersonDb,{ live: true}).on("change", () => {  });
+                            DbConfig.articleDb.sync(DbConfig.remoteArticleDb,{ live: true}).on("change", () => {  });
+                            DbConfig.saleDb.sync(DbConfig.remoteSaleDb,{ live: true}).on("change", () => {  });
+
+                            resolve();
+                        });
+                    });
+                });
+            }
+            else
+                resolve();
+        });
     }
 
     static logout() {

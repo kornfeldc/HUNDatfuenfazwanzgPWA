@@ -14,14 +14,35 @@ var mandatoryMixin = {
 }
 
 var sessionMixin = {
+    data() {
+        return {
+            syncing: false
+        }
+    },
     created() {
+        var app = this;
+        
         if(!DbConfig.isLoggedIn()) {
-            this.$parent.isLoggedIn = false;
+            app.$parent.isLoggedIn = false;
+            try { app.$parent.$parent.isLoggedIn = false; } catch(e) {}
             router.push({path: "/login"});
         }
         else {
-            this.$parent.isLoggedIn = true;
-            this.$parent.groupTitle = DbConfig.getGroupInfo().title;
+            app.$parent.isLoggedIn = true;
+            app.$parent.groupTitle = DbConfig.getGroupInfo().title;
+
+            try {
+                app.$parent.$parent.isLoggedIn = true;
+                app.$parent.$parent.groupTitle = DbConfig.getGroupInfo().title;
+            }
+            catch(e) {}
+
+            //init db
+            app.syncing = true;
+            DbConfig.initDb().then(()=> {
+                app.syncing = false;
+
+            });
         }
     }
 }

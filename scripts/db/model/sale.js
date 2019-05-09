@@ -117,7 +117,7 @@ class Sale extends BaseModel {
                         dayEntry = {
                             day: sale.saleDateDay,
                             dayNr: sale.saleDateAsNr,
-                            dayText: moment(sale.saleDateDay,"DD.MM.YYYY").format("dd, DD.MM.YYYY"),
+                            dayText: sale.isToday ? "HEUTE" : moment(sale.saleDateDay,"DD.MM.YYYY").format("dd, DD.MM.YYYY"),
                             topay: sale.isPayed ? 0 : sale.articleSum,
                             payed: sale.isPayed ? sale.articleSum : 0
                         };
@@ -128,6 +128,20 @@ class Sale extends BaseModel {
                         dayEntry.payed += sale.isPayed ? sale.articleSum : 0;
                     }
                 });
+
+                //check if today is in list
+                if(!dayList.find(dayEntry => dayEntry.day === moment().format("DD.MM.YYYY"))) {
+                    dayList.push(
+                        {
+                            day: moment().format("DD.MM.YYYY"),
+                            dayNr: moment().format("YYYYMMDD"),
+                            dayText: "HEUTE",
+                            topay: 0,
+                            payed: 0
+                        }
+                    );
+                }
+
 
                 dayList.sort(firstBy("dayNr",-1));
                 resolve(dayList);

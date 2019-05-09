@@ -1,8 +1,8 @@
 const PersonPage = {
     mixins: [sessionMixin,mandatoryMixin,utilMixins],
     template: `
-        <div class="p-std">
-            <div class="field">
+    <div class="p-std">
+        <div class="field">
             <label class="label">Vorname</label>
             <div class="control">
                 <input :class="getInputClass(person,'firstName')" type="text" placeholder="Vorname" v-model="person.firstName"/>

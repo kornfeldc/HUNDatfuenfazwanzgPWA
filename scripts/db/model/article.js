@@ -16,13 +16,15 @@ class Article extends BaseModel {
         ];
     }
 
-    static getList() {
+    static getList(search) {
         return Db.getList(DbConfig.articleDb, Article, (a,b)=> {
             if (a.title < b.title)
                 return -1;
             if ( a.title > b.title)
                 return 1;
             return 0;
+        }, (article) => {
+            return !search || article.title.toLowerCase().indexOf(search.toLowerCase()) >= 0;
         });
     }
 

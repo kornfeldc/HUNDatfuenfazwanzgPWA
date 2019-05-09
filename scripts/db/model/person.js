@@ -26,13 +26,16 @@ class Person extends BaseModel {
         return Db.getEntity(DbConfig.personDb, Person, id);
     }
 
-    static getList() {
+    static getList(search) {
+        
         return Db.getList(DbConfig.personDb, Person, (a,b)=> {
             if (a.fullName < b.fullName)
                 return -1;
             if ( a.fullName > b.fullName)
                 return 1;
             return 0;
+        }, (person) => {
+            return !search || person.fullName.toLowerCase().indexOf(search.toLowerCase()) >= 0;
         });
     }
 

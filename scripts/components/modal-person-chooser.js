@@ -9,6 +9,7 @@ Vue.component('modal-person-chooser', {
             <button class="delete" aria-label="close" @click="cancel"></button>
         </header>
         <section class="modal-card-body">
+            <search v-model="search" @changed="load" />
             <person-line v-for="entry in persons" :person="entry" v-on:click="choose(entry)" :key="entry._id"/>
         </section>
         </div>
@@ -18,6 +19,7 @@ Vue.component('modal-person-chooser', {
     },
     data() {
         return {
+            search: "",
             resolve: null,
             reject: null,
             persons: []
@@ -26,15 +28,19 @@ Vue.component('modal-person-chooser', {
     methods: {
         open() {
             var app = this;
-            Person.getList().then(persons => {
-                app.persons = persons;      
-                $(app.$refs.modal).addClass("is-active");
-            });   
+            app.load();
             
             return new Promise((resolve, reject) => {
                 app.resolve = resolve;
                 app.reject = reject;
             });
+        },
+        load() {
+            var app = this;
+            Person.getList(app.search).then(persons => {
+                app.persons = persons;      
+                $(app.$refs.modal).addClass("is-active");
+            });   
         },
         cancel() {
             var app = this;

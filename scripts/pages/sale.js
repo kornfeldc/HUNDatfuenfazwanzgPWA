@@ -125,9 +125,13 @@ const SalePage = {
         },
         remove() {
             var app = this;
-            app.$refs.yesNoRemove.open().then(() => {
-                app.sale.remove().then(() => router.push({ path: "/sales" }));
-            });
+            if(app.$route.params.id !== "_") {
+                app.$refs.yesNoRemove.open().then(() => {
+                    app.sale.remove().then(() => router.push({ path: "/sales" }));
+                });
+            }
+            else
+                app.cancel();
         },
         cancel() {
             router.push({ path: "/sales" });

@@ -1,8 +1,9 @@
 const PersonsPage = {
-    mixins: [sessionMixin,utilMixins],
+    mixins: [utilMixins],
     template: `
-    <div class="p-std">
+    <page-container>
         <div class="above_actions">
+            <search v-model="search" @changed="load" />
             <person-line v-for="entry in persons" :person="entry" v-on:click="open(entry)" :key="entry._id"/>
         </div>
         <div class="actions">
@@ -12,10 +13,11 @@ const PersonsPage = {
                 </div>
             </div>
         </div>
-    </div>
+    </page-container>
     `,
     data() {
         return {
+            search: "",
             persons: []
         };
     },
@@ -26,7 +28,7 @@ const PersonsPage = {
     methods: {
         load() {
             var app = this;
-            Person.getList().then(persons => {
+            Person.getList(app.search).then(persons => {
                 app.persons = persons;      
             });
         },

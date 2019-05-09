@@ -9,7 +9,8 @@ Vue.component('modal-article-chooser', {
                 <button class="delete" aria-label="close" @click="cancel"></button>
             </header>
             <section class="modal-card-body" v-if="render">
-                <div class="tabs">
+                <search v-model="search" @changed="load" />
+                <div class="tabs" v-if="!search || search.length == 0">
                     <ul>
                         <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="tab = 'favorites'">Favoriten</a></li>
                         <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="tab = at.id">{{at.shortTitle}}</a></li>
@@ -29,6 +30,7 @@ Vue.component('modal-article-chooser', {
     },
     data() {
         return {
+            search: "",
             resolve: null,
             reject: null,
             articleTypes: Article.getTypes(),
@@ -42,11 +44,7 @@ Vue.component('modal-article-chooser', {
         open() {
             var app = this;
             app.tab = "favorites";
-
-            Article.getList().then(articles => {
-                app.articles = articles;
-                $(app.$refs.modal).addClass("is-active");
-            });   
+            app.load(); 
 
             app.modifications = [];
             if(app.sale.articles && app.sale.articles.forEach) {
@@ -67,8 +65,18 @@ Vue.component('modal-article-chooser', {
                 app.reject = reject;
             });
         },
+        load() {
+            var app = this;
+            Article.getList(app.search).then(articles => {
+                app.articles = articles;
+                $(app.$refs.modal).addClass("is-active");
+            });  
+        },
         showArticle(article) {
             var app = this;
+            if(app.search && app.search.length > 0)
+                return true;
+
             if(app.tab === "favorites" && article.isFavorite)
                 return true;
             return app.tab === article.type;

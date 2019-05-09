@@ -10,7 +10,7 @@ class Db {
         });
     }
 
-    static getList(queryDb, model, sort) {
+    static getList(queryDb, model, sort, filter) {
         return new Promise((resolve,reject) => {
             queryDb.allDocs({ include_docs: true }).then(docs => {
 
@@ -18,8 +18,11 @@ class Db {
                 docs.rows.forEach(row => { 
                     var entity = new model();
                     entity.load(row.doc);
-                    list.push(entity);
+
+                    if(!filter || (filter && filter(entity)))
+                        list.push(entity);
                 });
+
                 sort && list.sort(sort);
                 resolve(list);
             });
