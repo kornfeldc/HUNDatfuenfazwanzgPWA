@@ -26,19 +26,23 @@ const SalePage = {
         <div class="actions" v-if="sale.person">
             <div class="field is-grouped">
                 <div class="control">
-                    <button class="button is-link" @click="save">OK</button>
+                    <button-primary @click="save">OK</button-primary>
                 </div>
                 <div class="control" v-if="sale.articleSum != 0 && !sale.isPayed">
-                    <button class="button is-success" @click="pay">Zahlen</button>
+                    <button-success @click="pay">Zahlen</button-success>
                 </div>
-                <div class="control" v-if="sale.articleSum != 0 && person.credit >= sale.articleSum && !sale.isPayed">
-                    <button class="button is-success is-outlined" @click="payWCredit">Alles mit Guthaben zahlen</button>
+                <!--<div class="control" v-if="sale.articleSum != 0 && person.credit >= sale.articleSum && !sale.isPayed">
+                    <button-success-inverted @click="payWCredit">Alles mit Guthaben zahlen</button-success-inverted>
+                </div>-->
+                <div class="control">
+                    <button-cancel @click="cancel"/>
                 </div>
                 <div class="control">
-                    <button class="button is-danger is-outlined" @click="remove">Löschen</button>
-                </div>
-                <div class="control">
-                    <button class="button is-text" @click="cancel">Abbrechen</button>
+                    <button-danger-inverted @click="remove">
+                        <span class="icon is-small">
+                        <i class="fas fa-trash"></i>
+                        </span>
+                    </button-danger-inverted>
                 </div>
             </div>
         </div>

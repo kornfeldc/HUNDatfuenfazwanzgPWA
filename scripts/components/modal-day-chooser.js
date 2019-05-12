@@ -14,7 +14,7 @@ Vue.component('modal-day-chooser', {
                         <div class="column">
                             {{day.dayText}}    
                         </div>
-                        <div class="column is-narrow warning-text" style="min-width:100px;text-align:right">
+                        <div class="column is-narrow warning-text" style="min-width:100px;text-align:right" v-show="day.topay!=0">
                             {{format(day.topay)}}
                         </div>
                         <div class="column is-narrow has-text-success" style="min-width:100px;text-align:right">
@@ -24,8 +24,8 @@ Vue.component('modal-day-chooser', {
                 </template>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-link" @click="today">Heute</button>
-                <button class="button is-text" @click="cancel">Abbrechen</button>
+                <button-primary @click="today">Heute</button-primary>
+                <button-cancel @click="cancel"/>
             </footer>
         </div>
     </div>

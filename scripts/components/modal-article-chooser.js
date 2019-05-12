@@ -19,8 +19,8 @@ Vue.component('modal-article-chooser', {
                 <sale-article-line v-for="article in articles" :article="article" v-show="showArticle(article)" :sale="sale" :key="article._id" @modify="(article,amount)=>modify(article,amount)"/>
             </section>
             <footer class="modal-card-foot">
-                <button class="button is-link" @click="ok">OK</button>
-                <button class="button is-text" @click="cancel">Abbrechen</button>
+                <button-primary @click="ok">OK</button-primary>
+                <button-cancel @click="cancel"/>
             </footer>
         </div>
     </div>

@@ -3,9 +3,35 @@ class Sale extends BaseModel {
         super(DbConfig.saleDb)        
         this.person = null; 
         this.articles = [];
+        /*
+        this.articles[
+            {
+                article: {
+                    _id: "",
+                    title: "Bier",
+                    price: 2
+                },
+                amount: 2
+            }
+        ];
+        */
+
         this.saleDate = moment().format("DD.MM.YYYY HH:mm:ss");
         this.payDate = null;
-        this.articleSum = 0;
+        
+        this.articleSum = 0.0;
+        this.inclTip = 0.0;
+        this.given = 0.0;
+
+        this.toPay = 0.0;
+        this.toReturn = 0.0;
+
+        this.usedCredit = false;
+        this.personCreditBefore = 0.0;
+        this.personCreditAfter = 0.0;
+        
+        this.addAdditionalCredit = 0.0;
+
         this.map = ["person", "articles", "saleDate", "payDate","articleSum"];
     }
 

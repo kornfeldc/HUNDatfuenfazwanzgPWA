@@ -50,10 +50,10 @@ const PersonPage = {
         <div class="pt-1">&nbsp;</div>
         <div class="field is-grouped">
             <div class="control">
-                <button class="button is-link" @click="save">Speichern</button>
+                <button-primary @click="save">Speichern</button-primary>
             </div>
             <div class="control">
-                <button class="button is-text" @click="cancel">Abbrechen</button>
+                <button-cancel @click="cancel"/>
             </div>
         </div>
     </div>

@@ -42,6 +42,10 @@ new Vue({
         moment.locale("de");
         app.setThemeColor();
         app.initializeNavigation();
+
+        
+        $("#logo").fadeOut(500);
+        setTimeout(()=>$("#app").fadeIn(800),300);
     },
     updated() {
         var app = this;

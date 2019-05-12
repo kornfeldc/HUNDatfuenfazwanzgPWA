@@ -12,15 +12,25 @@ Vue.component('sale-person', {
         </div>
         <div class="media">
             <div class="media-content">
-                Guthaben <button class="ml-std button is-small is-outlined is-link" @click="addCredit">Aufladen</button>
+                Guthaben<!-- <button class="ml-std button is-small is-outlined is-link" @click="addCredit">Aufladen</button>-->
             </div>
             <div class="media-right">
-                {{format(person.credit || 0)}}
+                € {{format(person.credit || 0)}}
+            </div>
+        </div>
+        <div class="field pt-std" v-if="mode === 'pay'">
+            <div class="flx vcenter">
+                <div class="pr-std">Mit Guthaben zahlen:</div>
+                <button class="button is-small is-success " v-if="value" @click="$emit('input',false)">JA</button>
+                <button class="button is-small is-danger" v-if="!value" @click="$emit('input',true)">NEIN</button>
+                <div style="flex-grow:1;text-align:right">Summe: € {{format(sale.articleSum)}}</div>
             </div>
         </div>
     </div>
     `,
     props: {
+        value: { type: Boolean, default: false },
+        mode: { type: String, default: "" },
         sale: { type: Object },
         person: { type: Object }
     },

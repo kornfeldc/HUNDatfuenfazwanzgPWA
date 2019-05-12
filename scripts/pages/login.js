@@ -4,7 +4,7 @@ const LoginPage = {
         <div class="field">
             <label class="label">Db-Url</label>
             <div class="control">
-                <input class="input" type="text" placeholder="Url" v-model="dbUrl"/>
+                <input class="input" type="text" placeholder="Url" v-model="dbUrl" id="login"/>
             </div>
         </div>
         <div class="field">

@@ -1,4 +1,4 @@
-Vue.component('modal-yesno', { 
+Vue.component('modal-input', { 
     mixins: [utilMixins],
     template:`
     <div class="modal" ref="modal">
@@ -6,44 +6,51 @@ Vue.component('modal-yesno', {
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">{{title}}</p>
-                <button class="delete" aria-label="close" @click="no"></button>
+                <button class="delete" aria-label="close" @click="cancel"></button>
             </header>
             <section class="modal-card-body" v-if="render">
-                {{text}}
+                <input class="input" ref="inp" type="number" v-model:value="value" @keyup.enter="save"/>
             </section>
             <footer class="modal-card-foot">
-                <button-primary @click="yes">Ja</button-primary>
-                <button-text @click="no">Nein</button-text>
+                <button-primary @click="save">OK</button-primary>
+                <button-cancel @click="cancel"/>
             </footer>
         </div>
     </div>
     `,
-    props: {
-        title: { type: String },
-        text: { type: String }
-    },
     data() {
         return {
+            title: "",
+            value: 0.0,
             render: true,
             resolve: null,
             reject: null
         };
     },
     methods: {
-        open() {
+        open(value, title) {
             var app = this;
+            app.value = value;
+            app.title = title;
+
             $(app.$refs.modal).addClass("is-active");
+
+            wait().then(() => { 
+                $(app.$refs.inp).focus();
+                wait().then($(app.$refs.inp).select());
+            });
+
             return new Promise((resolve, reject) => {
                 app.resolve = resolve;
                 app.reject = reject;
             });
         },
-        yes() {
+        save() {
             var app = this;
             $(app.$refs.modal).removeClass("is-active");
-            app.resolve();
+            app.resolve(app.value);
         },
-        no() {
+        cancel() {
             var app = this;
             $(app.$refs.modal).removeClass("is-active");
             app.reject();

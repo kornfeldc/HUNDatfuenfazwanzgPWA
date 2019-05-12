@@ -3,7 +3,7 @@ Vue.component('search', {
     template:`
     <div class="field has-addons pb-std">
         <div class="control has-icons-left" style="width:100%">
-            <input class="input" type="text" @keyup="changed" v-model="value" placeholder="Suche"/>
+            <input class="input" type="text" v-model="value" placeholder="Suche"/>
             <span class="icon is-small is-left">
                 <i class="fas fa-search"></i>
             </span>
@@ -18,15 +18,17 @@ Vue.component('search', {
     props: {
         value: { type: String }
     },
+    watch: {
+        value() {
+            var app = this;
+            app.$emit("input", app.value);
+            app.$emit("changed");
+        }
+    },
     methods: {
         clear() {
             var app = this;
             app.$emit("input", "");
-            app.$emit("changed");
-        },
-        changed() {
-            var app = this;
-            app.$emit("input", app.value);
             app.$emit("changed");
         }
     }

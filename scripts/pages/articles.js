@@ -9,11 +9,11 @@ const ArticlesPage = {
         <div class="actions">
             <div class="field">
                 <div class="control">
-                    <button class="button is-link" @click="open">Neuer Artikel</button>
+                    <button-primary @click="open">Neuer Artikel</button-primary>
                 </div>
             </div>
         </div>
-    </page-container>>
+    </page-container>
     `,
     data() {
         return {
@@ -24,6 +24,8 @@ const ArticlesPage = {
     mounted() {
         var app = this;
         this.load();
+
+        
     },
     methods: {
         load() {

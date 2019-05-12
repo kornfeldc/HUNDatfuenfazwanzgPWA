@@ -44,7 +44,7 @@ const SalesPage = {
         <div class="actions" v-show="isToday && sales.length > 0">
             <div class="field is-grouped">
                 <div class="control">
-                    <button class="button is-link" @click="open">Neuer Verkauf</button>
+                    <button-primary @click="open">Neuer Verkauf</button-primary>
                 </div>
             </div>
         </div>

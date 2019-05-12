@@ -9,7 +9,7 @@ const PersonsPage = {
         <div class="actions">
             <div class="field">
                 <div class="control">
-                    <button class="button is-link" @click="open">Neue Person</button>
+                    <button-primary @click="open">Neue Person</button-primary>
                 </div>
             </div>
         </div>
