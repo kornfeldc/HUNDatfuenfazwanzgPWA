@@ -97,10 +97,20 @@ const PayPage = {
         newCredit() {
             var app = this;
             if(app.person) {
-                if(!app.useCredit)
-                    return app.person.credit + app.sale.addAdditionalCredit;
-                else 
-                    return Math.max(app.person.credit - app.sale.articleSum + app.sale.addAdditionalCredit,0);
+                var ret = app.person.credit || 0;
+                console.log("newcredit calc -------------------------------------")
+                console.log("newcredit calc, personCredit", app.person.credit);
+                if(app.useCredit) {
+                    console.log("newcredit calc, articleSum", app.sale.articleSum);
+                    console.log("newcredit calc, removeFromRet", Math.min(app.person.credit, app.sale.articleSum));
+                    ret -= Math.min(app.person.credit, app.sale.articleSum);
+                    console.log("newcredit calc, actret", ret);
+                }
+                console.log("newcredit calc, add Additional", app.sale.addAdditionalCredit);
+                ret += app.sale.addAdditionalCredit;
+                console.log("newCredit calc, result", ret);
+                ret = Math.round(ret*10)/10;
+                return ret;
             }
             return 0;
         }
