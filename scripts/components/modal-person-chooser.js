@@ -10,6 +10,12 @@ Vue.component('modal-person-chooser', {
         </header>
         <section class="modal-card-body">
             <search v-model="search" @changed="load" />
+            <div class="tabs" v-if="!search || search.length == 0">
+                <ul>
+                    <li v-for="t in types" :class="(tab == t.id ? 'is-active':'')"><a @click="tab = t.id">{{t.shortTitle}}</a></li>
+                </ul>
+            </div>
+            <person-line :person="barPerson" v-on:click="choose(barPerson)"/>
             <person-line v-for="entry in persons" :person="entry" v-on:click="choose(entry)" :key="entry._id"/>
         </section>
         </div>
@@ -19,11 +25,24 @@ Vue.component('modal-person-chooser', {
     },
     data() {
         return {
+            barPerson: barPerson,
             search: "",
+            types: [
+                { id: "top", shortTitle: "TOP" },
+                { id: "all", shortTitle: "Alle" },
+                { id: "member", shortTitle: "Mitglieder" },
+                { id: "nomember", shortTitle: "Kursler" }
+            ],
+            tab: "top",
             resolve: null,
             reject: null,
             persons: []
         };
+    },
+    watch: {
+        tab() {
+            this.load();
+        }
     },
     methods: {
         open() {
@@ -37,7 +56,7 @@ Vue.component('modal-person-chooser', {
         },
         load() {
             var app = this;
-            Person.getList(app.search).then(persons => {
+            Person.getList(app.search, app.tab).then(persons => {
                 app.persons = persons;      
                 $(app.$refs.modal).addClass("is-active");
             });   
@@ -49,7 +68,7 @@ Vue.component('modal-person-chooser', {
         },
         choose(person) {
             var app = this;
-            if(person.mainPersonId && person.mainPersonId.length > 0) {
+            if(person && person.mainPersonId && person.mainPersonId.length > 0) {
                 Person.get(person.mainPersonId).then(mainPerson => {
                     $(app.$refs.modal).removeClass("is-active");
                     app.resolve(mainPerson);

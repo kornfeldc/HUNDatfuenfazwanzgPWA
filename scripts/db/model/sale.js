@@ -54,6 +54,16 @@ class Sale extends BaseModel {
     get saleDayShort() {
         return moment(this.saleDate, "DD.MM.YYYY HH:mm:ss").format("DD.MM.");
     }
+
+    save() {
+        return new Promise((resolve,reject) => {
+            super.save().then(() => {
+                Sale.calculateTops().then(() => {
+                    resolve();
+                });
+            });
+        });
+    }
    
     get sum() {
         return 0;
@@ -105,6 +115,16 @@ class Sale extends BaseModel {
                 _this.addSpecialProperties(allSales);
 
                 resolve(allSales);
+            });
+        });
+    }
+
+    static getOpenedSaleForPerson(person) {
+        var _this = this;
+        return new Promise((resolve,reject) => {
+            _this.getList().then(allSales => {
+                var sale = allSales.find(sale => !sale.isPayed && sale.person._id === person._id);
+                resolve(sale);
             });
         });
     }
@@ -171,6 +191,64 @@ class Sale extends BaseModel {
 
                 dayList.sort(firstBy("dayNr",-1));
                 resolve(dayList);
+            });
+        });
+    }
+
+    static calculateTops() {
+        var _this = this;
+        
+        //reference Day for Tops (last 6 months)
+        var referenceDayAsNr = parseInt(moment().add({months: -6}).format("YYYYMMDD"),0);
+
+        return new Promise((resolve,reject) => {
+            _this.getList().then(allSales => {
+                
+                var topSales = allSales.filter(sale => sale.saleDateAsNr >= referenceDayAsNr);
+                Person.getList().then(persons => {
+                    Article.getList().then(articles => {
+
+                        
+                        persons.forEach(person => {
+                            //calculate all person salescounts and tops
+                            var personAllSales = allSales.filter(s => s.person._id === person._id);
+                            var personTopSales = topSales.filter(s => s.person._id === person._id);
+
+                            person.articleCounts = {};
+                            person.topArticleCounts = {};
+
+                            person.saleCount = personAllSales ? personAllSales.length : 0;
+                            person.topSaleCount = personTopSales ? personTopSales.length : 0;
+                            
+                            person.saleSum = 0.0;
+                            person.topSaleSum = 0.0;
+
+                            personAllSales && personAllSales.forEach(s => {
+                                person.saleSum += s.articleSum;
+                                s.articles && s.articles.forEach(sa => {
+                                    var aid = sa.article._id;
+                                    if(!person.articleCounts[aid])
+                                        person.articleCounts[aid] = 0;
+                                    person.articleCounts[aid] += sa.amount;
+                                });
+                            });
+                            personTopSales && personTopSales.forEach(s => { 
+                                person.topSaleSum += s.articleSum;
+                                s.articles && s.articles.forEach(sa => {
+                                    var aid = sa.article._id;
+                                    if(!person.topArticleCounts[aid])
+                                        person.topArticleCounts[aid] = 0;
+                                    person.topArticleCounts[aid] += sa.amount;
+                                });
+                            });
+
+                            person.save();
+                        });
+
+                        resolve();
+                    });
+                });
+
             });
         });
     }

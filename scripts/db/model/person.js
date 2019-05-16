@@ -9,7 +9,16 @@ class Person extends BaseModel {
         this.mainPersonId = "";
         this.relatedPersons = [];
         this.credit = 0.0;
-        this.map = ["firstName","lastName","isMember","credit","personGroup","mainPersonId","relatedPersons"];
+        this.topSaleCount = 0;
+        this.topSaleSum = 0.0;
+        this.saleCount = 0;
+        this.saleSum = 0.0;
+        this.articleCounts = {};
+        this.topArticleCounts = {};
+        this.map = [
+            "firstName","lastName","isMember","credit","personGroup","mainPersonId",
+            "relatedPersons","topSaleCount", "saleCount", "topSaleSum", "saleSum",
+            "articleCounts", "topArticleCounts"];
     }
 
     get fullName() {
@@ -26,16 +35,33 @@ class Person extends BaseModel {
         return Db.getEntity(DbConfig.personDb, Person, id);
     }
 
-    static getList(search) {
+    static getList(search, tab) {
         
         return Db.getList(DbConfig.personDb, Person, (a,b)=> {
-            if (a.fullName < b.fullName)
-                return -1;
-            if ( a.fullName > b.fullName)
-                return 1;
-            return 0;
+            if(tab === "top") {
+                if (a.topSaleCount < b.topSaleCount)
+                    return 1;
+                if ( a.topSaleCount > b.topSaleCount)
+                    return -1;
+                return 0;
+            }
+            else {
+                if (a.fullName < b.fullName)
+                    return -1;
+                if ( a.fullName > b.fullName)
+                    return 1;
+                return 0;
+            }
         }, (person) => {
-            return !search || person.fullName.toLowerCase().indexOf(search.toLowerCase()) >= 0;
+            var ret = true;
+            if(tab === "member")
+                ret = person.isMember;
+            else if(tab === "nomember")
+                ret = !person.isMember;
+            else if(tab === "top")
+                ret = person.topSaleCount > 0;
+
+            return (ret && !search) || (search && person.fullName.toLowerCase().indexOf(search.toLowerCase()) >= 0);
         });
     }
 
@@ -81,3 +107,11 @@ class Person extends BaseModel {
         });
     }
 }
+
+const barPerson = {
+    _id: "bar",
+    fullName: "Barverkauf",
+    nameWithGroup: "Barverkauf",
+    isBar: true,
+    credit: 0
+};

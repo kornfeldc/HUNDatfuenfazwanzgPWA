@@ -14,7 +14,7 @@ const PayPage = {
                     <div class="title is-6">retour</div>
                     <div :class="'subtitle is-2 '+ getColor('toReturn',toReturn)">{{format(toReturn)}}</div>
                 </div>
-                <div class="column is-centered" style="text-align:center">
+                <div class="column is-centered" style="text-align:center" v-if="!person.isBar">
                     <div class="title is-6">neues Guth.</div>
                     <div :class="'subtitle is-2 '+ getColor('newCredit',newCredit)">{{format(newCredit)}}</div>
                 </div>
@@ -37,7 +37,7 @@ const PayPage = {
                         <button class="button is-rounded is-success" @click="modify('given','+')">+</button>
                     </div>
                 </div>
-                <div class="column  is-centered" style="text-align:center">
+                <div class="column  is-centered" style="text-align:center" v-if="!person.isBar">
                     <div class="title is-6">Guth. aufladen</div>
                     <div :class="'subtitle is-2 '+ getColor('addAdditionalCredit',sale.addAdditionalCredit)" @click="openInput('addAdditionalCredit')">{{format(sale.addAdditionalCredit)}} </div>
                     <div>
@@ -98,17 +98,15 @@ const PayPage = {
             var app = this;
             if(app.person) {
                 var ret = app.person.credit || 0;
-                console.log("newcredit calc -------------------------------------")
-                console.log("newcredit calc, personCredit", app.person.credit);
-                if(app.useCredit) {
-                    console.log("newcredit calc, articleSum", app.sale.articleSum);
-                    console.log("newcredit calc, removeFromRet", Math.min(app.person.credit, app.sale.articleSum));
+                if(app.useCredit) 
                     ret -= Math.min(app.person.credit, app.sale.articleSum);
-                    console.log("newcredit calc, actret", ret);
-                }
-                console.log("newcredit calc, add Additional", app.sale.addAdditionalCredit);
                 ret += app.sale.addAdditionalCredit;
-                console.log("newCredit calc, result", ret);
+
+                //check if credit article is in sale
+                var creditSaleArticle = (app.sale.articles||[]).find(sa => sa.article._id === "credit");
+                if(creditSaleArticle)
+                    ret += creditSaleArticle.article.price;
+
                 ret = Math.round(ret*10)/10;
                 return ret;
             }
@@ -147,8 +145,14 @@ const PayPage = {
             if(app.$route.params.id !== "_") 
                 Sale.get(app.$route.params.id).then(sale => { 
                     app.sale=sale;
-                    Person.get(app.sale.person._id).then(person=> { app.person = person; app.afterLoad() });
-                });
+
+                    if(app.sale.person._id === 'bar') {
+                        app.person = barPerson;
+                        app.afterLoad();
+                    }
+                    else
+                        Person.get(app.sale.person._id).then(person=> { app.person = person; app.afterLoad() });
+                }, () => router.push({ path: "/sales" }));
             else
                 router.push({ path: "/sales" });
         },

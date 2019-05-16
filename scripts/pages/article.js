@@ -63,7 +63,7 @@ const ArticlePage = {
         load() {
             var app = this;
             if(app.$route.params.id !== "_") 
-                Article.get(app.$route.params.id).then(article => app.article = article);
+                Article.get(app.$route.params.id).then(article => app.article = article, () => router.push({ path: "/articles" }));
             else 
                 app.article = new Article();
         },

@@ -12,21 +12,22 @@ Vue.component('modal-article-chooser', {
                 <search v-model="search" @changed="load" />
                 <div class="tabs" v-if="!search || search.length == 0">
                     <ul>
+                        <li :class="(tab == 'top' ? 'is-active':'')"><a @click="tab = 'top'">TOP</a></li>
                         <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="tab = 'favorites'">Favoriten</a></li>
                         <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="tab = at.id">{{at.shortTitle}}</a></li>
                     </ul>
                 </div>
-                <sale-article-line v-for="article in articles" :article="article" v-show="showArticle(article)" :sale="sale" :key="article._id" @modify="(article,amount)=>modify(article,amount)"/>
+                <sale-article-line v-for="article in articles" :article="article" :sale="sale" :key="article._id" @modify="(article,amount)=>modify(article,amount)"/>
             </section>
             <footer class="modal-card-foot">
                 <button-primary @click="ok">OK</button-primary>
+                <button-primary-inverted @click="addCredit" v-if="!person.isBar">Guthaben kaufen</button-primary-inverted>
                 <button-cancel @click="cancel"/>
             </footer>
         </div>
     </div>
     `,
     props: {
-        sale: { type: Object }
     },
     data() {
         return {
@@ -34,16 +35,29 @@ Vue.component('modal-article-chooser', {
             resolve: null,
             reject: null,
             articleTypes: Article.getTypes(),
-            tab: "favorites",
+            tab: "top",
             articles: [],
             modifications: [],
-            render: true
+            render: true,
+            sale: {},
+            person: {}
         };
     },
+    watch: {
+        tab() {
+            this.load();
+        }
+    },
     methods: {
-        open() {
+        open(sale, person) {
             var app = this;
-            app.tab = "favorites";
+            app.sale = sale;
+            app.person = person;
+            if(app.person.topArticleCounts !== undefined && app.person.topArticleCounts !== null && JSON.stringify(app.person.topArticleCounts) !== "{}")
+                app.tab = "top";
+            else 
+                app.tab = "favorites";
+
             app.load(); 
 
             app.modifications = [];
@@ -67,19 +81,10 @@ Vue.component('modal-article-chooser', {
         },
         load() {
             var app = this;
-            Article.getList(app.search).then(articles => {
+            Article.getList(app.search, app.tab, app.sale, app.person).then(articles => {
                 app.articles = articles;
                 $(app.$refs.modal).addClass("is-active");
             });  
-        },
-        showArticle(article) {
-            var app = this;
-            if(app.search && app.search.length > 0)
-                return true;
-
-            if(app.tab === "favorites" && article.isFavorite)
-                return true;
-            return app.tab === article.type;
         },
         modify(article,amount) {
             var app = this;
@@ -101,6 +106,11 @@ Vue.component('modal-article-chooser', {
             var app = this;
             $(app.$refs.modal).removeClass("is-active");
             app.reject();
+        },
+        addCredit() {
+            var app = this;
+            $(app.$refs.modal).removeClass("is-active");
+            app.reject("addCredit");
         }
     }
  });

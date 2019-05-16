@@ -10,7 +10,7 @@ Vue.component('sale-person', {
                 {{sale.saleDayShort}}
             </div>
         </div>
-        <div class="media">
+        <div class="media" v-if="!person.isBar">
             <div class="media-content">
                 Guthaben<!-- <button class="ml-std button is-small is-outlined is-link" @click="addCredit">Aufladen</button>-->
             </div>
@@ -18,7 +18,7 @@ Vue.component('sale-person', {
                 € {{format(person.credit || 0)}}
             </div>
         </div>
-        <div class="field pt-std" v-if="mode === 'pay'">
+        <div class="field pt-std" v-if="mode === 'pay' && !person.isBar">
             <div class="flx vcenter">
                 <div class="pr-std">Mit Guthaben zahlen:</div>
                 <button class="button is-small is-success " v-if="value" @click="$emit('input',false)">JA</button>

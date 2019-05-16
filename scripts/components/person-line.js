@@ -3,7 +3,8 @@ Vue.component('person-line', {
     template:`
     <div class="columns is-mobile is-vcentered hover" @click="$emit('click');">
         <div class="column">
-            <i :class="'fa fa-star f180 ' + ( person.isMember ? 'additional-text' : 'has-text-grey-lighter' )"/>
+            <i v-if="!person.isBar" style='min-width:30px;text-align:center' :class="'fa fa-star f180 ' + ( person && person.isMember ? 'additional-text' : 'has-text-grey-lighter' )"  />
+            <i v-if="person.isBar" style='min-width:30px;text-align:center' :class="'fa fa-euro-sign f180 has-text-success'"  />
         </div>
         <div class="column is-full">
             <h4 class="title is-5">{{person.fullName}}</h4>

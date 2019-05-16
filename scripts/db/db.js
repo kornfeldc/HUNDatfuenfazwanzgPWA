@@ -6,7 +6,7 @@ class Db {
                 var entity = new model();
                 entity.load(doc);
                 resolve(entity);
-            });
+            }, () => reject());
         });
     }
 

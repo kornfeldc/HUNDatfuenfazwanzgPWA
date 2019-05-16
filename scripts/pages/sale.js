@@ -47,8 +47,9 @@ const SalePage = {
             </div>
         </div>
         <modal-person-chooser ref="personChooser"/>
-        <modal-article-chooser ref="articleChooser" :sale="sale"/>
+        <modal-article-chooser ref="articleChooser"/>
         <modal-yesno ref="yesNoRemove" title="Verkauf löschen" text="Soll dieser Verkauf wirklich gelöscht werden?"/>
+        <modal-input ref="inp"/>
     </div>
     `,
     data() {
@@ -68,33 +69,59 @@ const SalePage = {
             if(app.$route.params.id !== "_") {
                 Sale.get(app.$route.params.id).then(sale => {
                     app.sale = sale;
-                    Person.get(app.sale.person._id).then(person=>app.person = person);
-                });
+                    if(app.sale.person._id === 'bar')
+                        app.person = barPerson;
+                    else
+                        Person.get(app.sale.person._id).then(person=> { 
+                            app.person = person;
+                        });
+                }, () => router.push({ path: "/sales" }) );
             }
             else {
                 app.$refs.personChooser.open().then(
                     //person selected
                     person => {
-                        app.sale = new Sale();
-                        app.person = person;
-                        app.sale.setPerson(person);
-                        app.addArticles();
+
+                        //check if there is an open sale for this person
+                        if(!person.isBar) {
+                            Sale.getOpenedSaleForPerson(person).then(sale => {
+                                if(sale) 
+                                    app.sale = sale;
+                                else {
+                                    app.sale = new Sale();
+                                    app.sale.setPerson(person);
+                                }
+                                app.person = person;
+                                app.addArticles(true);
+                            });
+                        }
+                        else {
+                            app.sale = new Sale();
+                            app.sale.setPerson(person);
+                            app.person = person;
+                            app.addArticles(true);
+                        }
+                        
                     }, 
                     //nothing selected:
                     () => router.push({ path: "/sales" }) 
                 );
             }
         },
-        addArticles() {
+        addArticles(firstOnNewSale) {
             var app = this;
-            console.log("add articles before", app.sale.articles);
-            app.$refs.articleChooser.open().then(modifications => {
+            app.$refs.articleChooser.open(app.sale, app.person).then(modifications => {
                 if(modifications) {
                     app.sale.articles = modifications;
                     console.log("add articles after", app.sale.articles);
                     app.calculate();
                 }
-                
+            }, (rejectMode) => {
+
+                if(rejectMode === "addCredit") 
+                    app.addCredit();
+                else if(firstOnNewSale === true)
+                    router.push({ path: "/sales" });
             });
         },
         modify(article, amount) {
@@ -139,6 +166,42 @@ const SalePage = {
         },
         cancel() {
             router.push({ path: "/sales" });
+        },
+        addCredit() {
+            var app = this;
+
+            //check if there is already credit article
+            var sa = (app.sale.articles || []).find(sa => sa.article._id === "credit");
+            var text = "Guthaben im Wert von € kaufen"
+            var price = 0;
+            if(sa) {
+                text = "Gekauftes Guthaben bearbeiten (0 eingeben um gekauftes Guthaben zu löschen";
+                price = sa.article.price;
+            }
+
+            app.$refs.inp.open(price, text).then(val => { 
+                val = parseFloat(val);
+                if(sa) {
+                    if(val == 0) {
+                        //delete
+                        var idx = app.sale.articles.findIndex(sa => sa.article._id === "credit");
+                        app.sale.articles.splice(idx, 1);
+                    }
+                    else
+                        sa.article.price = val;
+                }
+                else if(val !== 0) {
+                    app.sale.articles.push({
+                        article: {
+                            _id: "credit",
+                            title: "Guthaben",
+                            price: val
+                        },
+                        amount: 1
+                    });
+                }
+                app.calculate();
+            });
         }
     }
 }

@@ -47,6 +47,13 @@ const PersonPage = {
                 Bitte ausfüllen
             </p>
         </div>
+        {{person.topArticleCounts}}
+        <p class="help" v-if="person.saleCount && person.saleCount > 0">
+            Verkäufe insgesamt: {{person.saleCount}} / € {{format(person.saleSum)}}
+        </p>
+        <p class="help" v-if="person.saleCount && person.saleCount > 0">
+            Verkäufe in den letzten 6 Monaten: {{person.topSaleCount}} / € {{format(person.topSaleSum)}}
+        </p>
         <div class="pt-1">&nbsp;</div>
         <div class="field is-grouped">
             <div class="control">
@@ -75,7 +82,7 @@ const PersonPage = {
                 Person.get(app.$route.params.id).then(person => { 
                     app.person = person;
                     app.isPersonGroup = app.person.personGroup && app.person.personGroup.length > 0;
-                });
+                }, () => router.push({ path: "/persons" }));
             else 
                 app.person = new Person();
         },
