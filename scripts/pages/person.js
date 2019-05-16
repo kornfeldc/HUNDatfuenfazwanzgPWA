@@ -2,67 +2,76 @@ const PersonPage = {
     mixins: [sessionMixin,mandatoryMixin,utilMixins],
     template: `
     <div class="p-std">
-        <div class="field">
-            <label class="label">Vorname</label>
-            <div class="control">
-                <input :class="getInputClass(person,'firstName')" type="text" placeholder="Vorname" v-model="person.firstName"/>
+        <div class="above_actions">
+            <div class="field">
+                <label class="label">Vorname</label>
+                <div class="control">
+                    <input :class="getInputClass(person,'firstName')" type="text" placeholder="Vorname" v-model="person.firstName"/>
+                </div>
+                <p class="help is-danger" v-if="!hasValue(person,'firstName')">
+                    Bitte ausfüllen
+                </p>
             </div>
-            <p class="help is-danger" v-if="!hasValue(person,'firstName')">
-                Bitte ausfüllen
+            <div class="field">
+                <label class="label">Nachname</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="Nachname" v-model="person.lastName"/>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Telefon</label>
+                <div class="control">
+                    <input class="input" type="number" placeholder="Telefon" v-model="person.phoneNr"/>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <label class="checkbox">
+                        <input type="checkbox" v-model="person.isMember">
+                        Ist Mitglied
+                    </label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <label class="checkbox">
+                        <input type="checkbox" v-model="isPersonGroup">
+                        Zusammenhängende Personen
+                    </label>
+                </div>
+            </div>
+            <div class="field" v-if="isPersonGroup">
+                <div class="control">
+                    <input :class="getInputClass(person,'personGroup')" type="text" placeholder="Personengruppe" v-model="person.personGroup"/>
+                </div>
+                <p class="help is-danger" v-if="!hasValue(person,'personGroup')">
+                    Bitte ausfüllen
+                </p>
+            </div>
+            <p class="help" v-if="person.saleCount && person.saleCount > 0">
+                Verkäufe insgesamt: {{person.saleCount}} / € {{format(person.saleSum)}}
             </p>
+            <p class="help" v-if="person.saleCount && person.saleCount > 0">
+                Verkäufe in den letzten 6 Monaten: {{person.topSaleCount}} / € {{format(person.topSaleSum)}}
+            </p>            
+            <p class="pt-std">
+                Aktuelles Guthaben: <strong class="has-text-link">€ {{format(person.credit)}}</strong>
+            </p>            
         </div>
-        <div class="field">
-            <label class="label">Nachname</label>
-            <div class="control">
-                <input class="input" type="text" placeholder="Nachname" v-model="person.lastName"/>
+        <div class="actions">
+            <div class="field is-grouped">
+                <div class="control">
+                    <button-primary @click="save">Speichern</button-primary>
+                </div>
+                <div class="control">
+                    <button-primary-inverted @click="addCredit">Guthaben hinzufügen</button-primary-inverted>
+                </div>
+                <div class="control">
+                    <button-cancel @click="cancel"/>
+                </div>
             </div>
         </div>
-        <div class="field">
-            <label class="label">Telefon</label>
-            <div class="control">
-                <input class="input" type="number" placeholder="Telefon" v-model="person.phoneNr"/>
-            </div>
-        </div>
-        <div class="field">
-            <div class="control">
-                <label class="checkbox">
-                    <input type="checkbox" v-model="person.isMember">
-                    Ist Mitglied
-                </label>
-            </div>
-        </div>
-        <div class="field">
-            <div class="control">
-                <label class="checkbox">
-                    <input type="checkbox" v-model="isPersonGroup">
-                    Zusammenhängende Personen
-                </label>
-            </div>
-        </div>
-        <div class="field" v-if="isPersonGroup">
-            <div class="control">
-                <input :class="getInputClass(person,'personGroup')" type="text" placeholder="Personengruppe" v-model="person.personGroup"/>
-            </div>
-            <p class="help is-danger" v-if="!hasValue(person,'personGroup')">
-                Bitte ausfüllen
-            </p>
-        </div>
-        {{person.topArticleCounts}}
-        <p class="help" v-if="person.saleCount && person.saleCount > 0">
-            Verkäufe insgesamt: {{person.saleCount}} / € {{format(person.saleSum)}}
-        </p>
-        <p class="help" v-if="person.saleCount && person.saleCount > 0">
-            Verkäufe in den letzten 6 Monaten: {{person.topSaleCount}} / € {{format(person.topSaleSum)}}
-        </p>
-        <div class="pt-1">&nbsp;</div>
-        <div class="field is-grouped">
-            <div class="control">
-                <button-primary @click="save">Speichern</button-primary>
-            </div>
-            <div class="control">
-                <button-cancel @click="cancel"/>
-            </div>
-        </div>
+        <modal-input ref="inp"/>
     </div>
     `,
     data() {
@@ -95,6 +104,13 @@ const PersonPage = {
         },
         cancel() {
             router.push({ path: "/persons" });
+        },
+        addCredit() {
+            var app = this;
+            app.$refs.inp.open(0, "Guthaben hinzufügen").then(val => { 
+                val = parseFloat(val);
+                app.person.credit += val;
+            });
         }
     }
 }
