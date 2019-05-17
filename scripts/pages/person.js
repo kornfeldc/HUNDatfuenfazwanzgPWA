@@ -12,12 +12,14 @@ const PersonPage = {
                     Bitte ausfüllen
                 </p>
             </div>
+            <div><i class="fas fa-exchange-alt" @click="switchName"/></div>
             <div class="field">
                 <label class="label">Nachname</label>
                 <div class="control">
                     <input class="input" type="text" placeholder="Nachname" v-model="person.lastName"/>
                 </div>
             </div>
+            <div>&nbsp;</div>
             <div class="field">
                 <label class="label">Telefon</label>
                 <div class="control">
@@ -69,9 +71,17 @@ const PersonPage = {
                 <div class="control">
                     <button-cancel @click="cancel"/>
                 </div>
+                <div class="control">
+                    <button-danger-inverted @click="remove">
+                        <span class="icon is-small">
+                            <i class="fas fa-trash"></i>
+                        </span>
+                    </button-danger-inverted>
+                </div>
             </div>
         </div>
         <modal-input ref="inp"/>
+        <modal-yesno ref="yesNoRemove" title="Person löschen" text="Soll diesee Person wirklich gelöscht werden?"/>
     </div>
     `,
     data() {
@@ -92,25 +102,54 @@ const PersonPage = {
                     app.person = person;
                     app.isPersonGroup = app.person.personGroup && app.person.personGroup.length > 0;
                 }, () => router.push({ path: "/persons" }));
-            else 
+            else {
                 app.person = new Person();
+                if(app.$route.query && app.$route.query.name)
+                    app.person.firstName = app.$route.query.name;
+            }
         },
         save() {
             var app = this;
             app.person.save().then(()=> {
                 Person.correctPersons();
-                router.push({ path: "/persons" });
+                app.back();
             });
         },
         cancel() {
-            router.push({ path: "/persons" });
+            var app = this;
+            app.back();
+        },
+        back() {
+            var app = this;
+            if(app.$route.query && app.$route.query.fs) 
+                router.go(-1)
+            else if(app.$route.query && app.$route.query.s)
+                router.go(-1)
+            else
+                router.push({ path: "/persons" });
         },
         addCredit() {
             var app = this;
-            app.$refs.inp.open(0, "Guthaben hinzufügen").then(val => { 
+            app.$refs.inp.open(0, "Guthaben hinzufügen (für Kurs € 10)").then(val => { 
                 val = parseFloat(val);
                 app.person.credit += val;
             });
-        }
+        },
+        switchName() {
+            var app = this;
+            var f = app.person.firstName;
+            app.person.firstName = app.person.lastName;
+            app.person.lastName = f;
+        },
+        remove() {
+            var app = this;
+            if(app.$route.params.id !== "_") {
+                app.$refs.yesNoRemove.open().then(() => {
+                    app.person.remove().then(() => app.back());
+                });
+            }
+            else
+                app.cancel();
+        },
     }
 }

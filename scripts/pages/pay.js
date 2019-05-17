@@ -1,7 +1,7 @@
 const PayPage = {
     mixins: [sessionMixin,utilMixins],
     template: `
-    <div class="p-std">
+    <page-container :syncing="syncing">
         <div class="above_actions">
             <sale-person :sale="sale" :person="person" mode="pay" v-model="useCredit"/>
             <div>&nbsp;</div>
@@ -56,12 +56,15 @@ const PayPage = {
                     <button-success @click="save">Fertig</button-success>
                 </div>
                 <div class="control">
+                    <button-primary-inverted v-if="toReturn > 0" @click="retourAsCredit">Retour als Guthaben</button-primary-inverted>
+                </div>
+                <div class="control">
                     <button-cancel @click="cancel"/>
                 </div>
             </div>
         </div>
         <modal-input ref="inp"/>
-    </div>
+    </page-container>
     `,
     data() {
         return {
@@ -119,11 +122,13 @@ const PayPage = {
             app.recalc("initial");
         }
     },
-    mounted() {
-        var app = this;
-        app.load();
+    created() {
     },
     methods: {
+        initDone() {
+            var app = this;
+            app.load();
+        },
         getColor(mode,val) {
             var app = this;
             if(mode == "toPay" && app.toPay > 0)
@@ -142,10 +147,11 @@ const PayPage = {
         },
         load() {
             var app = this;
-            if(app.$route.params.id !== "_") 
+            if(app.$route.params.id !== "_") {
+                app.syncing = true;
+
                 Sale.get(app.$route.params.id).then(sale => { 
                     app.sale=sale;
-
                     if(app.sale.person._id === 'bar') {
                         app.person = barPerson;
                         app.afterLoad();
@@ -153,11 +159,13 @@ const PayPage = {
                     else
                         Person.get(app.sale.person._id).then(person=> { app.person = person; app.afterLoad() });
                 }, () => router.push({ path: "/sales" }));
+            }
             else
                 router.push({ path: "/sales" });
         },
         afterLoad() {
             var app = this;
+            app.syncing = false;
             if(app.person.credit > app.sale.articleSum)
                 app.useCredit = true;
             app.recalc("initial");
@@ -193,6 +201,11 @@ const PayPage = {
                 app.$refs.inp.open(app.sale.addAdditionalCredit, "Guthaben aufladen").then(val => { app.setValue("addAdditionalCredit", val); app.recalc(); });
             else if(mode === "inclTip")
                 app.$refs.inp.open(app.sale.inclTip, "inklusive Trinkgeld").then(val => { app.setValue("inclTip", val); app.recalc("inclTip"); });
+        },
+        retourAsCredit() {
+            var app = this;
+            var retour = app.toReturn;
+            app.sale.addAdditionalCredit += retour;
         },
         modify(prop,dir) {
             var app = this;

@@ -1,9 +1,15 @@
 const ArticlesPage = {
     mixins: [utilMixins],
     template: `
-    <page-container>
+    <page-container ref="page" :syncing="syncing">
         <div class="above_actions">
             <search v-model="search" @changed="load" />
+            <div class="tabs" v-if="!search || search.length == 0">
+                <ul>
+                    <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="tab = 'favorites'">Favoriten</a></li>
+                    <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="tab = at.id">{{at.shortTitle}}</a></li>
+                </ul>
+            </div>
             <article-line v-for="entry in articles" :article="entry" v-on:click="open(entry)" :key="entry._id"/>
         </div>
         <div class="actions">
@@ -18,19 +24,25 @@ const ArticlesPage = {
     data() {
         return {
             search: "",
-            articles: []
+            articleTypes: Article.getTypes(),
+            tab: "favorites",
+            articles: [],
+            isMainPage: true
         };
     },
     mounted() {
         var app = this;
-        this.load();
-
-        
+        this.load();  
+    },
+    watch: {
+        tab() {
+            this.load();
+        }
     },
     methods: {
         load() {
             var app = this;
-            Article.getList(app.search).then(articles => {
+            Article.getList(app.search, app.tab).then(articles => {
                 app.articles = articles;    
             });
         },

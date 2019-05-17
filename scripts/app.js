@@ -40,10 +40,8 @@ new Vue({
     mounted() {
         var app = this;
         moment.locale("de");
-        app.setThemeColor();
         app.initializeNavigation();
 
-        
         $("#logo").fadeOut(500);
         setTimeout(()=>$("#app").fadeIn(800),300);
     },
@@ -57,8 +55,8 @@ new Vue({
                 $(".navbar-menu").toggleClass("is-active");
             });
         },
-        setThemeColor() {
-            
-        }
+        reload() {
+            window.location.reload();
+        },
     }
 });

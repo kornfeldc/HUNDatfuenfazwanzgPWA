@@ -17,6 +17,16 @@ Vue.component('modal-person-chooser', {
             </div>
             <person-line :person="barPerson" v-on:click="choose(barPerson)"/>
             <person-line v-for="entry in persons" :person="entry" v-on:click="choose(entry)" :key="entry._id"/>
+
+            <div v-if="search" class="columns is-mobile is-vcentered hover" @click="createPerson();">
+                <div class="column">
+                    <i style='min-width:30px;text-align:center' :class="'fa fa-plus f180 has-text-link' "  />
+                </div>
+                <div class="column is-full">
+                    <h4 class="title is-5">"{{search}}" neu anlegen</h4>
+                </div>
+            </div>
+
         </section>
         </div>
     </div>
@@ -78,6 +88,10 @@ Vue.component('modal-person-chooser', {
                 $(app.$refs.modal).removeClass("is-active");
                 app.resolve(person);
             }
+        },
+        createPerson() {
+            var app = this;
+            router.push({ path: '/person/_', query: { name: app.search, fs: true } });
         }
     }
  });

@@ -1,7 +1,7 @@
 Vue.component('sale-person', { 
     mixins: [utilMixins],
     template:`
-    <div class="box">
+    <div class="box" @click="$emit('click')">
         <div class="media">
             <div class="media-content">
                 <p class="title is-5">{{person.nameWithGroup}}</p>

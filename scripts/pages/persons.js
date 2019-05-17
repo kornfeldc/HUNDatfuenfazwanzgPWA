@@ -1,9 +1,14 @@
 const PersonsPage = {
     mixins: [utilMixins],
     template: `
-    <page-container>
+    <page-container ref="page" :syncing="syncing">
         <div class="above_actions">
             <search v-model="search" @changed="load" />
+            <div class="tabs" v-if="!search || search.length == 0">
+                <ul>
+                    <li v-for="t in types" :class="(tab == t.id ? 'is-active':'')"><a @click="tab = t.id">{{t.shortTitle}}</a></li>
+                </ul>
+            </div>
             <person-line v-for="entry in persons" :person="entry" v-on:click="open(entry)" :key="entry._id"/>
         </div>
         <div class="actions">
@@ -18,17 +23,30 @@ const PersonsPage = {
     data() {
         return {
             search: "",
-            persons: []
+            types: [
+                { id: "top", shortTitle: "TOP" },
+                { id: "all", shortTitle: "Alle" },
+                { id: "member", shortTitle: "Mitglieder" },
+                { id: "nomember", shortTitle: "Kursler" }
+            ],
+            tab: "top",
+            persons: [],
+            isMainPage: true
         };
     },
     mounted() {
         var app = this;
         this.load();
     },
+    watch: {
+        tab() {
+            this.load();
+        }
+    },
     methods: {
         load() {
             var app = this;
-            Person.getList(app.search).then(persons => {
+            Person.getList(app.search, app.tab).then(persons => {
                 app.persons = persons;      
             });
         },

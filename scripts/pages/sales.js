@@ -1,7 +1,7 @@
 const SalesPage = {
-    mixins: [utilMixins],
+    mixins: [sessionMixin,utilMixins],
     template: `
-    <page-container>
+    <page-container :syncing="syncing">
         <div class="above_actions">
             <div class="px-std columns is-mobile is-vcentered">
                 <div class="column is-full is-centered" style="text-align:center">
@@ -54,7 +54,8 @@ const SalesPage = {
     data() {
         return {
             day: moment().format("DD.MM.YYYY"),
-            sales: []
+            sales: [],
+            isMainPage: true
         };
     },
     computed: {

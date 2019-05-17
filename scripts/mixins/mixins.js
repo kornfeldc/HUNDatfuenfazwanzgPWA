@@ -2,7 +2,7 @@ var mandatoryMixin = {
     methods: {
         hasValue(obj,property) {
             var app = this;
-            return (obj && obj[property] && obj[property].length > 0);
+            return (obj && obj[property] && obj[property].toString().length > 0);
         },
         getInputClass(obj,property) {
             return {
@@ -38,11 +38,16 @@ var sessionMixin = {
             catch(e) {}
 
             //init db
-            app.syncing = true;
-            DbConfig.initDb().then(()=> {
-                app.syncing = false;
-
-            });
+            if(app.isMainPage) {
+                app.syncing = true;
+                DbConfig.initDb().then(()=> {
+                    app.syncing = false;
+                    if(app.initDone)
+                        app.initDone();
+                });
+            }
+            else if(app.initDone)
+                app.initDone();
         }
     }
 }

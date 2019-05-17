@@ -3,7 +3,7 @@ const SalePage = {
     template: `
     <div class="p-std">
         <div class="above_actions" v-if="sale.person && render">
-            <sale-person :sale="sale" :person="person"/>
+            <sale-person :sale="sale" :person="person" @click="openPerson"/>
 
             <div class="box">
                 <div class="media p-1">
@@ -56,12 +56,18 @@ const SalePage = {
         return {
             sale: {},
             person: {},
-            render: true
+            render: true,
+            saveOnDestroy: false
         };
     },
     mounted() {
         var app = this;
         app.load();
+    },
+    destroyed() {
+        var app = this;
+        if(app.saveOnDestroy)
+            app.$root.storedSA = { saleId: app.sale._id, articles: app.sale.articles };
     },
     methods: {
         load() {
@@ -69,11 +75,14 @@ const SalePage = {
             if(app.$route.params.id !== "_") {
                 Sale.get(app.$route.params.id).then(sale => {
                     app.sale = sale;
-                    if(app.sale.person._id === 'bar')
+                    if(app.sale.person._id === 'bar') {
                         app.person = barPerson;
+                        app.restore();
+                    }
                     else
                         Person.get(app.sale.person._id).then(person=> { 
                             app.person = person;
+                            app.restore();
                         });
                 }, () => router.push({ path: "/sales" }) );
             }
@@ -92,14 +101,16 @@ const SalePage = {
                                     app.sale.setPerson(person);
                                 }
                                 app.person = person;
-                                app.addArticles(true);
+                                if(!app.restore())
+                                    app.addArticles(true);
                             });
                         }
                         else {
                             app.sale = new Sale();
                             app.sale.setPerson(person);
                             app.person = person;
-                            app.addArticles(true);
+                            if(!app.restore())
+                                app.addArticles(true);
                         }
                         
                     }, 
@@ -202,6 +213,23 @@ const SalePage = {
                 }
                 app.calculate();
             });
+        },
+        openPerson() {
+            var app = this;
+            if(app.person._id  !== 'bar') {
+                app.saveOnDestroy = true;
+                router.push({ path: "/person/"+app.person._id, query: { s: app.sale._id } });
+            }
+        },
+        restore() {
+            var app = this;
+            if(app.$root.storedSA && app.$root.storedSA.saleId === app.sale._id) {
+                app.sale.articles = app.$root.storedSA.articles;
+                delete app.$root.storedSA;
+                return true;
+            }
+            else
+                return false;
         }
     }
 }
