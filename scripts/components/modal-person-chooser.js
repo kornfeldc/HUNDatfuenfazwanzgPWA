@@ -16,7 +16,7 @@ Vue.component('modal-person-chooser', {
                 </ul>
             </div>
             <person-line :person="barPerson" v-on:click="choose(barPerson)"/>
-            <person-line v-for="entry in persons" :person="entry" v-on:click="choose(entry)" :key="entry._id"/>
+            <person-line v-for="entry in persons" :person="entry" v-on:click="choose(entry)" :key="entry._id" mode="chooser"/>
 
             <div v-if="search" class="columns is-mobile is-vcentered hover" @click="createPerson();">
                 <div class="column">

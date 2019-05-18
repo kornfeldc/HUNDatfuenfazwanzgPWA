@@ -7,11 +7,13 @@ Vue.component('person-line', {
             <i v-if="person.isBar" style='min-width:30px;text-align:center' :class="'fa fa-euro-sign f180 has-text-success'"  />
         </div>
         <div class="column is-full">
-            <h4 class="title is-5">{{person.fullName}}</h4>
+            <h4 class="title is-5" v-if="mode !== 'chooser'">{{person.fullName}}</h4>
+            <h4 class="title is-5" v-if="mode === 'chooser'">{{person.nameWithGroup}}</h4>
         </div>
     </div>
     `,
     props: {
+        mode: { type: String },
         person: { type: Object }
     }
  });

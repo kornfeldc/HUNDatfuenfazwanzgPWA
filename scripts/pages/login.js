@@ -2,15 +2,15 @@ const LoginPage = {
     template: `
     <div class="p-std">
         <div class="field">
-            <label class="label">Db-Url</label>
+            <label class="label">User</label>
             <div class="control">
-                <input class="input" type="text" placeholder="Url" v-model="dbUrl" id="login"/>
+                <input class="input" type="text" placeholder="User" v-model="user" id="user"/>
             </div>
         </div>
         <div class="field">
-            <label class="label">Email</label>
+            <label class="label">Passwort</label>
             <div class="control">
-                <input class="input" type="text" placeholder="Email" v-model="email"/>
+                <input class="input" type="password" placeholder="Passwort" v-model="password"/>
             </div>
             <p class="help is-danger" v-if="invalid">
                 Ungültige Daten
@@ -26,8 +26,8 @@ const LoginPage = {
     `,
     data() {
         return {
-            dbUrl: "",
-            email: "",
+            user: "",
+            password: "",
             loading: false,
             invalid: false
         };
@@ -44,16 +44,27 @@ const LoginPage = {
         },
         login() {
             var app = this;
-            app.loading = true;
-            DbConfig.checkDb(app.dbUrl, app.email).then(() => {
-                app.invalid = false;
-                app.loading = false;
-                router.push({path: "/sales"});
-            }, () => {
-                //error
-                app.loading = false;
-                app.invalid = true;
+            app.loading=true;
+            var hash = (app.user+app.password).hashCode();
+            $.ajax({
+                url: "configs/"+hash+".json",
+                success: data => {
+                    if(data) 
+                        DbConfig.parse(data).then(() => {
+                            app.invalid = false;
+                            app.loading = false;
+                            router.push({path: "/sales"});
+                        });
+                    else 
+                        app.loginfailed();
+                },
+                error: app.loginfailed
             });
+        },
+        loginfailed() {
+            var app = this;
+            app.loading = false;
+            app.invalid=true;
         }
     }
 }

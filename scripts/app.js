@@ -1,4 +1,6 @@
 //start service worker
+const VERSION ="1.0.3";
+
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
         .register('service-worker.js')
@@ -31,7 +33,8 @@ new Vue({
     data() {
         return {
             groupTitle: "",
-            isLoggedIn: false
+            isLoggedIn: false,
+            version: VERSION
         };
     },
     computed: {

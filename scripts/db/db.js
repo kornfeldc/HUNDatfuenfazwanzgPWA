@@ -28,4 +28,18 @@ class Db {
             });
         });
     }
+
+    static deleteAll(queryDb) {
+        return new Promise((resolve, reject) =>  {
+            queryDb.allDocs({ include_docs: true }).then(docs => {
+                var list = [];
+                docs.rows.forEach(row => { 
+                    row.doc._deleted = true;
+                    list.push(row.doc);
+                });
+                console.log("list to delete", list);
+                queryDb.bulkDocs(list).then(resolve, reject);
+            });
+        });
+    }
 }

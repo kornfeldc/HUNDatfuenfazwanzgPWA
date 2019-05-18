@@ -1,7 +1,13 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/4.2.0/workbox-sw.js');
+const VERSION ="1.0.3";
 
 if (workbox) {
   console.log(`Yay! Workbox is loaded 🎉`);
+
+  workbox.core.setCacheNameDetails({
+    prefix: 'kantine',
+    suffix: VERSION
+  });
 
   //cache first libraries
   const cacheFirst = (scripts) => {
@@ -24,7 +30,7 @@ if (workbox) {
   workbox.routing.registerRoute(new RegExp('.*\.js'), workbox.strategies.networkFirst());
   
   //css (Use cache but update in the background ASAP)
-  workbox.routing.registerRoute(/.*\.css/, workbox.strategies.staleWhileRevalidate({cacheName: 'css-cache',}));
+  workbox.routing.registerRoute(/.*\.css/, workbox.strategies.staleWhileRevalidate({ cacheName: 'css-cache' }));
 
   //images
   workbox.routing.registerRoute(
@@ -38,8 +44,8 @@ if (workbox) {
         new workbox.expiration.Plugin({
           // Cache only 30 images
           maxEntries: 30,
-          // Cache for a maximum of a week
-          maxAgeSeconds: 7 * 24 * 60 * 60,
+          // Cache for a maximum of a day
+          maxAgeSeconds: 1 * 24 * 60 * 60,
         })
       ],
     })

@@ -53,6 +53,14 @@ class BaseModel {
         }); 
     }
 
+    getDbDoc() {
+        var _this = this;
+        if(this.doc === null) 
+            return _this.toObj();
+        else 
+            return _this.toDoc();
+    }
+
     remove() {
         return this.db.remove(this.doc);
     }

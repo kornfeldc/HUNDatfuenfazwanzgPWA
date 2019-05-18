@@ -48,7 +48,7 @@ const SalesPage = {
                 </div>
             </div>
         </div>
-        <modal-day-chooser ref="dayChooser"/>
+        <modal-day-chooser ref="dayChooser" @syncStart="syncing=true" @syncStop="syncing=false" />
     </page-container>
     `,
     data() {
@@ -78,15 +78,17 @@ const SalesPage = {
             return sum;
         }
     },
-    mounted() {
-        var app = this;
-        this.load();
-    },
     methods: {
+        initDone() {
+            var app = this;
+            app.load();
+        },
         load() {
             var app = this;
+            app.syncing=true;            
             Sale.getListFiltered({ day: app.day }).then(sales => {
                 app.sales = sales;      
+                app.syncing=false;
             });
         },
         open(entry) {

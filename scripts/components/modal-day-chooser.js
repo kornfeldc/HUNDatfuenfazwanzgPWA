@@ -43,8 +43,10 @@ Vue.component('modal-day-chooser', {
             var app = this;
             app.tab = "favorites";
             
+            app.$emit("syncStart");
             Sale.getDayList().then(dayList => {
                 app.dayList = dayList;
+                app.$emit("syncStop");
                 $(app.$refs.modal).addClass("is-active");
             });   
 

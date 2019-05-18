@@ -66,7 +66,7 @@ const PersonPage = {
                     <button-primary @click="save">Speichern</button-primary>
                 </div>
                 <div class="control">
-                    <button-primary-inverted @click="addCredit">Guthaben hinzufügen</button-primary-inverted>
+                    <button-primary-inverted @click="addCredit">Guthaben +/-</button-primary-inverted>
                 </div>
                 <div class="control">
                     <button-cancel @click="cancel"/>

@@ -1,5 +1,5 @@
 const ArticlesPage = {
-    mixins: [utilMixins],
+    mixins: [sessionMixin,utilMixins],
     template: `
     <page-container ref="page" :syncing="syncing">
         <div class="above_actions">
@@ -30,19 +30,21 @@ const ArticlesPage = {
             isMainPage: true
         };
     },
-    mounted() {
-        var app = this;
-        this.load();  
-    },
     watch: {
         tab() {
             this.load();
         }
     },
     methods: {
+        initDone() {
+            var app = this;
+            app.load();
+        },
         load() {
             var app = this;
+            app.syncing=true;
             Article.getList(app.search, app.tab).then(articles => {
+                app.syncing=false;
                 app.articles = articles;    
             });
         },

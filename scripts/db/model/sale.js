@@ -208,11 +208,12 @@ class Sale extends BaseModel {
                 Person.getList().then(persons => {
                     Article.getList().then(articles => {
 
-                        
+                        var bulk = [];
+
                         persons.forEach(person => {
                             //calculate all person salescounts and tops
-                            var personAllSales = allSales.filter(s => s.person._id === person._id);
-                            var personTopSales = topSales.filter(s => s.person._id === person._id);
+                            var personAllSales = allSales.filter(s => s.person && s.person._id === person._id);
+                            var personTopSales = topSales.filter(s => s.person && s.person._id === person._id);
 
                             person.articleCounts = {};
                             person.topArticleCounts = {};
@@ -242,10 +243,10 @@ class Sale extends BaseModel {
                                 });
                             });
 
-                            person.save();
+                            bulk.push(person.getDbDoc());
                         });
 
-                        resolve();
+                        DbConfig.personDb.bulkDocs(bulk).then(() => resolve());
                     });
                 });
 
