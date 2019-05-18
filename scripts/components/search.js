@@ -3,12 +3,12 @@ Vue.component('search', {
     template:`
     <div class="field has-addons pb-std">
         <div class="control has-icons-left" style="width:100%">
-            <input class="input" type="text" v-model="value" placeholder="Suche"/>
+            <input class="input" type="text" v-model="val" placeholder="Suche"/>
             <span class="icon is-small is-left">
                 <i class="fas fa-search"></i>
             </span>
         </div>
-        <div class="control" v-if="value && value.length > 0">
+        <div class="control" v-if="val && val.length > 0">
             <a class="button is-outlined is-danger" @click="clear">
                 <i class="fas fa-times"></i>
             </a>
@@ -18,10 +18,16 @@ Vue.component('search', {
     props: {
         value: { type: String }
     },
+    data() {
+        return {
+            val: this.value
+        };
+    },
     watch: {
-        value() {
+        val() {
             var app = this;
-            app.$emit("input", app.value);
+            console.log("emit "+app.val);
+            app.$emit("input", app.val);
             app.$emit("changed");
         }
     },

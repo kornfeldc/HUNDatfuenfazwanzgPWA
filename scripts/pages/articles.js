@@ -27,7 +27,8 @@ const ArticlesPage = {
             articleTypes: Article.getTypes(),
             tab: "favorites",
             articles: [],
-            isMainPage: true
+            isMainPage: true,
+            first: true
         };
     },
     watch: {
@@ -42,9 +43,10 @@ const ArticlesPage = {
         },
         load() {
             var app = this;
-            app.syncing=true;
+            if(app.first) app.syncing=true;
             Article.getList(app.search, app.tab).then(articles => {
-                app.syncing=false;
+                app.first = false;
+                app.syncing = false;
                 app.articles = articles;    
             });
         },

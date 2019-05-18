@@ -31,11 +31,28 @@ class Person extends BaseModel {
         return this.fullName;
     }
 
+    matches(search) {
+        if(this.personGroup && this.personGroup.length > 0) {
+            if(this.fullName.toLowerCase().indexOf(search.toLowerCase()) >= 0 || this.personGroup.toLowerCase().indexOf(search.toLowerCase()) >= 0)
+                return true;
+            else if(this.relatedPersons && this.relatedPersons.length >0) {
+                var ret = false;
+                if(this.relatedPersons.find(rp => rp.fullName.toLowerCase().indexOf(search.toLowerCase()) >= 0 ))
+                    ret = true;
+                return ret;
+            }
+            else
+                return false;
+        }
+        else
+            return this.fullName.toLowerCase().indexOf(search.toLowerCase()) >= 0;
+    }
+
     static get(id) {
         return Db.getEntity(DbConfig.personDb, Person, id);
     }
 
-    static getList(search, tab) {
+    static getList(search, tab, mode) {
         
         return Db.getList(DbConfig.personDb, Person, (a,b)=> {
             if(tab === "top") {
@@ -61,7 +78,14 @@ class Person extends BaseModel {
             else if(tab === "top")
                 ret = person.topSaleCount > 0;
 
-            return (ret && !search) || (search && person.fullName.toLowerCase().indexOf(search.toLowerCase()) >= 0);
+            var allow = true;
+            if(mode === "chooser") {
+                //just show main Persons
+                if(person.mainPersonId && person.mainPersonId !== person._id)
+                    allow = false;
+            }
+
+            return allow && ((ret && !search) || (search && person.matches(search)));
         });
     }
 

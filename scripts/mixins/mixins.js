@@ -19,7 +19,7 @@ var sessionMixin = {
             syncing: false
         }
     },
-    created() {
+    mounted() {
         var app = this;
         
         if(!DbConfig.isLoggedIn()) {
@@ -38,16 +38,16 @@ var sessionMixin = {
             catch(e) {}
 
             //init db
-            if(app.isMainPage) {
+            //if(app.isMainPage) {
                 app.syncing = true;
                 DbConfig.initDb().then(()=> {
                     app.syncing = false;
                     if(app.initDone)
                         app.initDone();
                 });
-            }
-            else if(app.initDone)
-                app.initDone();
+            //}
+            //else if(app.initDone)
+              //  app.initDone();
         }
     }
 }

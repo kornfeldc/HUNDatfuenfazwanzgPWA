@@ -60,16 +60,16 @@ const SalePage = {
             saveOnDestroy: false
         };
     },
-    mounted() {
-        var app = this;
-        app.load();
-    },
     destroyed() {
         var app = this;
         if(app.saveOnDestroy)
             app.$root.storedSA = { saleId: app.sale._id, articles: app.sale.articles };
     },
     methods: {
+        initDone() {
+            var app = this;
+            app.load();
+        },
         load() {
             var app = this;
             if(app.$route.params.id !== "_") {

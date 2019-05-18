@@ -31,7 +31,8 @@ const PersonsPage = {
             ],
             tab: "top",
             persons: [],
-            isMainPage: true
+            isMainPage: true,
+            first: true
         };
     },
     watch: {
@@ -46,9 +47,10 @@ const PersonsPage = {
         },
         load() {
             var app = this;
-            app.syncing=true;
+            if(app.first) app.syncing = true;
             Person.getList(app.search, app.tab).then(persons => {
-                app.syncing=false;
+                app.first = false;
+                app.syncing = false;
                 app.persons = persons;      
             });
         },

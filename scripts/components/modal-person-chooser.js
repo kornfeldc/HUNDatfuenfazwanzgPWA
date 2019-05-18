@@ -66,7 +66,7 @@ Vue.component('modal-person-chooser', {
         },
         load() {
             var app = this;
-            Person.getList(app.search, app.tab).then(persons => {
+            Person.getList(app.search, app.tab, "chooser").then(persons => {
                 app.persons = persons;      
                 $(app.$refs.modal).addClass("is-active");
             });   
