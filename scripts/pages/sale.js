@@ -1,7 +1,7 @@
 const SalePage = {
     mixins: [sessionMixin,utilMixins],
     template: `
-    <div class="p-std">
+    <page-container :syncing="syncing">
         <div class="above_actions" v-if="sale.person && render">
             <sale-person :sale="sale" :person="person" @click="openPerson"/>
 
@@ -50,7 +50,7 @@ const SalePage = {
         <modal-article-chooser ref="articleChooser"/>
         <modal-yesno ref="yesNoRemove" title="Verkauf löschen" text="Soll dieser Verkauf wirklich gelöscht werden?"/>
         <modal-input ref="inp"/>
-    </div>
+    </page-container>
     `,
     data() {
         return {
@@ -151,14 +151,18 @@ const SalePage = {
             if(app.sale.isPayed)
                 app.cancel();
             else {
+                app.syncing = true;
                 app.sale.save().then(()=> {
+                    app.syncing=false;
                     router.push({ path: "/sales" });
                 });
             }
         },
         pay() {
             var app = this;
+            app.syncing = true;
             app.sale.save().then(()=> {
+                app.syncing = false;
                 router.push({ path: "/pay/" + app.sale._id });
             });
         },

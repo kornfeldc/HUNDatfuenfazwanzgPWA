@@ -56,11 +56,16 @@ class Sale extends BaseModel {
     }
 
     save() {
+        var _this = this;
         return new Promise((resolve,reject) => {
             super.save().then(() => {
-                Sale.calculateTops().then(() => {
-                    resolve();
-                });
+                resolve();
+                //start async calculation
+                if(_this.isPayed) {
+                    setTimeout(function() {
+                        Sale.calculateTops();
+                    });
+                }
             });
         });
     }
@@ -202,6 +207,7 @@ class Sale extends BaseModel {
         var referenceDayAsNr = parseInt(moment().add({months: -6}).format("YYYYMMDD"),0);
 
         return new Promise((resolve,reject) => {
+            performance.mark("calculateTops");
             _this.getList().then(allSales => {
                 
                 var topSales = allSales.filter(sale => sale.saleDateAsNr >= referenceDayAsNr);
@@ -215,38 +221,56 @@ class Sale extends BaseModel {
                             var personAllSales = allSales.filter(s => s.person && s.person._id === person._id);
                             var personTopSales = topSales.filter(s => s.person && s.person._id === person._id);
 
-                            person.articleCounts = {};
-                            person.topArticleCounts = {};
-
-                            person.saleCount = personAllSales ? personAllSales.length : 0;
-                            person.topSaleCount = personTopSales ? personTopSales.length : 0;
-                            
-                            person.saleSum = 0.0;
-                            person.topSaleSum = 0.0;
+                            var articleCounts = {};
+                            var topArticleCounts = {};
+                            var saleCount = personAllSales ? personAllSales.length : 0;
+                            var topSaleCount = personTopSales ? personTopSales.length : 0;
+                            var saleSum = 0.0;
+                            var topSaleSum = 0.0;
 
                             personAllSales && personAllSales.forEach(s => {
-                                person.saleSum += s.articleSum;
+                                saleSum += s.articleSum;
                                 s.articles && s.articles.forEach(sa => {
                                     var aid = sa.article._id;
-                                    if(!person.articleCounts[aid])
-                                        person.articleCounts[aid] = 0;
-                                    person.articleCounts[aid] += sa.amount;
+                                    if(!articleCounts[aid])
+                                        articleCounts[aid] = 0;
+                                    articleCounts[aid] += sa.amount;
                                 });
                             });
                             personTopSales && personTopSales.forEach(s => { 
-                                person.topSaleSum += s.articleSum;
+                                topSaleSum += s.articleSum;
                                 s.articles && s.articles.forEach(sa => {
                                     var aid = sa.article._id;
-                                    if(!person.topArticleCounts[aid])
-                                        person.topArticleCounts[aid] = 0;
-                                    person.topArticleCounts[aid] += sa.amount;
+                                    if(!topArticleCounts[aid])
+                                        topArticleCounts[aid] = 0;
+                                    topArticleCounts[aid] += sa.amount;
                                 });
                             });
 
-                            bulk.push(person.getDbDoc());
+                            if(
+                                JSON.stringify(person.articleCounts) != JSON.stringify(articleCounts) ||
+                                JSON.stringify(person.topArticleCounts) != JSON.stringify(topArticleCounts) ||
+                                person.saleCount != saleCount ||
+                                person.topSaleCount != topSaleCount ||
+                                person.saleSum != saleSum ||
+                                person.topSaleSum != topSaleSum
+                            ) {
+                                console.log("person changed", person.fullName);
+                                person.articleCounts = articleCounts;
+                                person.topArticleCounts = topArticleCounts;
+                                person.saleCount = saleCount;
+                                person.topSaleCount = topSaleCount;
+                                person.saleSum = saleSum;
+                                person.topSaleSum = topSaleSum;
+                                bulk.push(person.getDbDoc());
+                            }
                         });
 
-                        DbConfig.personDb.bulkDocs(bulk).then(() => resolve());
+                        DbConfig.personDb.bulkDocs(bulk).then(() => {
+                            performance.measure("calculateTops", "calculateTops");
+                            console.log(performance.getEntriesByType("measure"));
+                            resolve();
+                        });
                     });
                 });
 

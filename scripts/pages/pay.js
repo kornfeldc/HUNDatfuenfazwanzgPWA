@@ -172,6 +172,7 @@ const PayPage = {
         },
         save() {
             var app = this
+            app.syncing = true;
 
             app.sale.personCreditBefore = app.person.credit;
             app.sale.personCreditAfter = app.newCredit;
@@ -186,6 +187,7 @@ const PayPage = {
 
             app.sale.payDate = moment().format("DD.MM.YYYY HH:mm:ss");
             app.sale.save().then(()=> {
+                app.syncing = false;
                 router.push({ path: "/sales" });
             });
         },

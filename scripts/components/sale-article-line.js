@@ -1,10 +1,10 @@
 Vue.component('sale-article-line', { 
     mixins: [utilMixins],
     template:`
-    <div class="columns is-mobile is-vcentered hover" @click="click">
+    <div class="columns is-mobile is-vcentered hover" @click="modify(1)">
         <div class="column">
             <h4 class="title is-5">{{article.title}}</h4>
-        </div>
+        </div> 
         <div class="column is-narrow p-m0" v-if="!sale.isPayed">
             <button class="button is-rounded is-danger" @click="modify(-1)">-</button>
         </div>

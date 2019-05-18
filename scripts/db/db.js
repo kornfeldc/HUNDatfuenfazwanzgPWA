@@ -12,7 +12,11 @@ class Db {
 
     static getList(queryDb, model, sort, filter) {
         return new Promise((resolve,reject) => {
+            performance.mark("allDocs");
             queryDb.allDocs({ include_docs: true }).then(docs => {
+
+                performance.measure("measure all docs","allDocs");
+                performance.mark("loadDocs");
 
                 var list = [];
                 docs.rows.forEach(row => { 
@@ -23,7 +27,14 @@ class Db {
                         list.push(entity);
                 });
 
+                performance.measure("measure loadDocs", "loadDocs");
+                performance.mark("sort");
+
                 sort && list.sort(sort);
+                performance.measure("sort", "sort");
+
+                console.log(performance.getEntriesByType("measure"));
+
                 resolve(list);
             });
         });
