@@ -32,7 +32,31 @@ class Sale extends BaseModel {
         
         this.addAdditionalCredit = 0.0;
 
-        this.map = ["person", "articles", "saleDate", "payDate","articleSum"];
+        this.map = ["person", "articles", "saleDate", "payDate","articleSum", "inclTip", "given", "toPay", "toReturn", "usedCredit", "personCreditBefore", "personCreditAfter", "addAdditionalCredit"];
+    }
+
+    copy(db) {
+        var c = new Sale(db);
+        c = Sale.setProps(this, c);
+        return c;
+    }
+
+    static setProps(from, to) {
+        to._id = from._id;
+        to.person = from.person;
+        to.articles = from.articles;
+        to.saleDate = from.saleDate;
+        to.payDate = from.payDate;
+        to.articleSum = from.articleSum;
+        to.inclTip = from.inclTip;
+        to.given = from.given;
+        to.toPay = from.toPay;
+        to.toReturn = from.toReturn;
+        to.usedCredit = from.usedCredit;
+        to.personCreditBefore = from.personCreditBefore;
+        to.personCreditAfter = from.personCreditAfter;
+        to.addAdditionalCredit = from.addAdditionalCredit;
+        return to;
     }
 
     setPerson(person) {
@@ -55,16 +79,73 @@ class Sale extends BaseModel {
         return moment(this.saleDate, "DD.MM.YYYY HH:mm:ss").format("DD.MM.");
     }
 
+    remove() {
+        var _this = this;
+        return new Promise((resolve, reject) => {
+            if(_this.db === DbConfig.actSalesDb) {
+                //remove from both databases
+                console.log("remove from both databases");
+
+                Db.getEntity(DbConfig.allSalesDb, Sale, _this._id)
+                    .then(allsale => {
+                        DbConfig.allSalesDb.remove(allsale.doc).then(() => {
+                            super.remove().then(() => resolve());
+                        });
+                    })
+                    .catch(() => {
+                        super.remove().then(() => resolve());
+                    });
+            }
+            else 
+                super.remove().then(() => resolve());
+        });
+    }
+
     save() {
         var _this = this;
         return new Promise((resolve,reject) => {
             super.save().then(() => {
-                resolve();
-                //start async calculation
-                if(_this.isPayed) {
-                    setTimeout(function() {
-                        Sale.calculateTops();
-                    });
+
+                if(_this.db === DbConfig.actSalesDb) {
+
+                    //check if sale exists in allSales
+                    Db.getEntity(DbConfig.allSalesDb, Sale, _this._id)
+                        .then(allsale => {
+                            console.log("actsale found in allSales");
+                            allsale = Sale.setProps(_this, allsale);
+                            DbConfig.allSalesDb.put(allsale.toDoc()).then(() => {
+                                resolve();
+                                //start async calculation
+                                if(_this.isPayed) {
+                                    setTimeout(function() {
+                                        Sale.calculateTops();
+                                    });
+                                }        
+                            });
+                        })
+                        .catch(() => {
+                            console.log("actsale NOT found in allSales");
+                            var copiedSale = _this.copy(DbConfig.allSalesDb);
+                            DbConfig.allSalesDb.put(copiedSale.toObj()).then(() => {
+                                resolve();
+                                //start async calculation
+                                if(_this.isPayed) {
+                                    setTimeout(function() {
+                                        Sale.calculateTops();
+                                    });
+                                }        
+                            });
+                        });
+                }
+                else {
+                    console.log("save saved just to allDb");
+                    resolve();
+                    //start async calculation
+                    if(_this.isPayed) {
+                        setTimeout(function() {
+                            Sale.calculateTops();
+                        });
+                    }
                 }
             });
         });
@@ -96,6 +177,10 @@ class Sale extends BaseModel {
         return parseInt(moment(this.saleDate, "DD.MM.YYYY HH:mm:ss").format("YYYYMMDD"),10);
     }
 
+    static getAllSalesList() {
+        return Sale.getList(DbConfig.allSalesDb);
+    }
+
     static getList(db) {
         return Db.getList(db || DbConfig.actSalesDb, Sale, (a,b)=> {
             return 0;
@@ -108,7 +193,11 @@ class Sale extends BaseModel {
             
             performance.mark("saleListFiltered_getList");
 
-            _this.getList().then(allSales => {
+            var getter = filter.day === moment().format("DD.MM.YYYY") ?
+                Sale.cleanAndGetActList :
+                Sale.getAllSalesList;
+
+            getter().then(allSales => {
                 performance.measure("saleListFiltered_getList", "saleListFiltered_getList");
                 performance.mark("saleListFiltered_filter");
 
@@ -293,4 +382,44 @@ class Sale extends BaseModel {
         });
     }
 
+    static cleanAndGetActList() {
+        return new Promise((resolve, reject) => {
+            Sale.getList().then(actSales => {
+                var retSales = [];
+                var deleteSales = [];
+                (actSales||[]).forEach(sale => {
+                    if(!sale.isPayed || (sale.isPayed && sale.isToday)) 
+                        retSales.push(sale);
+                    else {
+                        sale._deleted = true;
+                        deleteSales.push(sale.getDbDoc());
+                    }
+                });
+
+                if(deleteSales.length > 0) {
+                    console.log("actSales for removing", deleteSales);
+                    DbConfig.actSalesDb.bulkDocs(deleteSales).then(() => resolve(retSales));
+                }
+                else {
+                    console.log("no actSales for removing");
+                    resolve(retSales);
+                }
+            });
+        });
+    }
+
+    static migrateOpended() {
+        Sale.getAllSalesList().then(allSales => {
+            Sale.cleanAndGetActList().then(actSales => {
+                var filteredAll = allSales.filter(as => !as.isPayed);
+                filteredAll.forEach(fa => {
+                    if(!actSales.find(as => as._id === fa._id)) {
+                        //copy from all sale to act sale
+                        var copiedSale = fa.copy(DbConfig.actSalesDb);
+                        DbConfig.actSalesDb.put(copiedSale.toObj());
+                    }
+                });
+            });
+        });
+    }
 }

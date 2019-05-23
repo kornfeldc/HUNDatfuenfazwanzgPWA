@@ -21,7 +21,7 @@ Vue.component('modal-article-chooser', {
             </section>
             <footer class="modal-card-foot">
                 <button-primary @click="ok">OK</button-primary>
-                <button-primary-inverted @click="addCredit" v-if="!person.isBar">Guthaben kaufen</button-primary-inverted>
+                <button-primary-inverted @click="addCredit" v-if="!person.isBar && firstOnNewSale">Nur Guthaben kaufen</button-primary-inverted>
                 <button-cancel @click="cancel"/>
             </footer>
         </div>
@@ -40,7 +40,8 @@ Vue.component('modal-article-chooser', {
             modifications: [],
             render: true,
             sale: {},
-            person: {}
+            person: {},
+            firstOnNewSale: false
         };
     },
     watch: {
@@ -49,8 +50,9 @@ Vue.component('modal-article-chooser', {
         }
     },
     methods: {
-        open(sale, person) {
+        open(sale, person, firstOnNewSale) {
             var app = this;
+            app.firstOnNewSale = firstOnNewSale;
             app.sale = sale;
             app.person = person;
             if(app.person.topArticleCounts !== undefined && app.person.topArticleCounts !== null && JSON.stringify(app.person.topArticleCounts) !== "{}")

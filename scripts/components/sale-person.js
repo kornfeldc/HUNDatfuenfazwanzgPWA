@@ -15,7 +15,7 @@ Vue.component('sale-person', {
                 Guthaben<!-- <button class="ml-std button is-small is-outlined is-link" @click="addCredit">Aufladen</button>-->
             </div>
             <div class="media-right">
-                € {{format(person.credit || 0)}}
+                € {{format(personCredit)}}
             </div>
         </div>
         <div class="field pt-std" v-if="mode === 'pay' && !person.isBar">
@@ -33,6 +33,18 @@ Vue.component('sale-person', {
         mode: { type: String, default: "" },
         sale: { type: Object },
         person: { type: Object }
+    },
+    computed: {
+        personCredit() {
+            var app = this;
+            var credit = app.person.credit || 0;
+            // if(app.sale) {
+            //     var creditSaleArticle = (app.sale.articles||[]).find(sa => sa.article._id === "credit");
+            //     if(creditSaleArticle)
+            //         credit += creditSaleArticle.article.price;
+            // }
+            return credit;
+        },
     },
     methods:{
         addCredit() {}

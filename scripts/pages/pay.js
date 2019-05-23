@@ -74,6 +74,11 @@ const PayPage = {
         };
     },
     computed: {
+        personCredit() {
+            var app = this;
+            var credit = app.person.credit || 0;
+            return credit;
+        },
         allowPay() {
             var app = this;
             return app.sale.given >= app.toPay;
@@ -81,12 +86,14 @@ const PayPage = {
         toPay() {
             var app = this;
             var val = 0;
-            if(app.useCredit && app.person.credit >= app.sale.articleSum)
+            
+            if(app.useCredit && app.personCredit >= app.sale.articleSum)
                 val = 0;
             else if(app.useCredit)
-                val = app.sale.articleSum - app.person.credit;
+                val = app.sale.articleSum - app.personCredit;
             else
                 val = app.sale.articleSum;
+
             return Math.round(val*10)/10;
         },
         baseToReturn() {
@@ -100,16 +107,11 @@ const PayPage = {
         newCredit() {
             var app = this;
             if(app.person) {
-                var ret = app.person.credit || 0;
+                var ret = app.personCredit;
                 if(app.useCredit) 
-                    ret -= Math.min(app.person.credit, app.sale.articleSum);
+                    ret -= Math.min(app.personCredit, app.sale.articleSum);
+
                 ret += app.sale.addAdditionalCredit;
-
-                //check if credit article is in sale
-                var creditSaleArticle = (app.sale.articles||[]).find(sa => sa.article._id === "credit");
-                if(creditSaleArticle)
-                    ret += creditSaleArticle.article.price;
-
                 ret = Math.round(ret*10)/10;
                 return ret;
             }
@@ -137,9 +139,9 @@ const PayPage = {
                 return "has-text-success";
             else if(mode == "toReturn" && app.toReturn > 0)
                 return "has-text-danger has-text-weight-bold";
-            else if(mode == "newCredit" && app.person.credit > app.newCredit) 
+            else if(mode == "newCredit" && app.personCredit > app.newCredit) 
                 return "has-text-danger";
-            else if(mode == "newCredit" && app.person.credit < app.newCredit) 
+            else if(mode == "newCredit" && app.personCredit < app.newCredit) 
                 return "has-text-link";
             else if(val === 0)
                 return "has-text-grey-light";
@@ -166,21 +168,24 @@ const PayPage = {
         afterLoad() {
             var app = this;
             app.syncing = false;
-            if(app.person.credit > app.sale.articleSum)
+            if(app.personCredit > app.sale.articleSum)
                 app.useCredit = true;
+            if(app.$route.query.jc > 0)
+                app.useCredit = false;
+
             app.recalc("initial");
         },
         save() {
             var app = this
             app.syncing = true;
 
-            app.sale.personCreditBefore = app.person.credit;
+            app.sale.personCreditBefore = app.personCredit;
             app.sale.personCreditAfter = app.newCredit;
             app.sale.toReturn = app.toReturn;
             app.sale.toPay = app.toPay;
             app.sale.usedCredit = app.useCredit;
 
-            if(app.newCredit !== app.person.credit) {
+            if(app.newCredit !== app.personCredit) {
                 app.person.credit = app.newCredit;
                 app.person.save();
             }
@@ -250,6 +255,9 @@ const PayPage = {
                 app.sale.inclTip = app.toPay;
                 app.sale.given = app.toPay;
                 app.sale.addAdditionalCredit = 0.0;
+
+                if(app.$route.query && app.$route.query.jc && app.$route.query.jc > 0) 
+                    app.sale.addAdditionalCredit = app.sale.given = parseFloat(app.$route.query.jc);
             }
 
             if(app.sale.inclTip < app.toPay) 

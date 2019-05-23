@@ -1,5 +1,5 @@
 //start service worker
-const VERSION ="1.0.4";
+const VERSION ="1.0.8";
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
@@ -34,19 +34,42 @@ new Vue({
         return {
             groupTitle: "",
             isLoggedIn: false,
-            version: VERSION
+            version: VERSION,
+            syncInfo: {
+                persons: "idle",
+                articles: "idle",
+                actSales: "idle",
+                allSales: "idle"
+            }
         };
     },
     computed: {
         
     },
-    mounted() {
+    created() {
         var app = this;
         moment.locale("de");
+
+        $(document).on("dbSyncStart", (evt,options) => {
+            console.log("dbSyncStart", options);
+            app.syncInfo[options.db] = "syncing";
+        });
+
+        $(document).on("dbSyncStop", (evt,options) => {
+            console.log("dbSyncStop", options);
+            app.syncInfo[options.db] = "idle";
+        });
+
+        $(document).on("dbChanged", (evt,options) => {
+            console.log("dbChanged", options);
+        });
+    },
+    mounted() {
+        var app = this;
         app.initializeNavigation();
 
         $("#logo").fadeOut(500);
-        setTimeout(()=>$("#app").fadeIn(800),300);
+        setTimeout(()=>$("#app").fadeIn(800),300);        
     },
     updated() {
         var app = this;

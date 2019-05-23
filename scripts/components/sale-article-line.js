@@ -6,13 +6,13 @@ Vue.component('sale-article-line', {
             <h4 class="title is-5">{{article.title}}</h4>
         </div> 
         <div class="column is-narrow p-m0" v-if="!sale.isPayed">
-            <button class="button is-rounded is-danger" @click="modify(-1)">-</button>
+            <button class="button is-rounded is-danger" @click.stop="modify(-1)">-</button>
         </div>
         <div class="column is-narrow p-m0" style="width:45px;text-align:center">
             {{amount}}x
         </div>
         <div class="column is-narrow p-m0" v-if="!sale.isPayed">
-            <button class="button is-rounded is-success" @click="modify(1)">+</button>
+            <button class="button is-rounded is-success" @click.stop="modify(1)">+</button>
         </div>
         <div class="column is-narrow" style="width:60px;text-align:right">
             <template v-if="mode!=='sale'">

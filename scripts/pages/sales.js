@@ -82,6 +82,13 @@ const SalesPage = {
         initDone() {
             var app = this;
             app.load();
+
+            $(document).on("dbChanged", (evt,options) => {
+                if(options.db === "actSales") {
+                    console.log("reload sales after dbChange");
+                    app.load();
+                }
+            });
         },
         load() {
             var app = this;

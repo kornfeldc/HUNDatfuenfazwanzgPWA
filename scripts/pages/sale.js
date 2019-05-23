@@ -94,15 +94,18 @@ const SalePage = {
                         //check if there is an open sale for this person
                         if(!person.isBar) {
                             Sale.getOpenedSaleForPerson(person).then(sale => {
-                                if(sale) 
+                                var firstOnNewSale = true;
+                                if(sale) {
                                     app.sale = sale;
+                                    firstOnNewSale = false;
+                                }
                                 else {
                                     app.sale = new Sale();
                                     app.sale.setPerson(person);
                                 }
                                 app.person = person;
                                 if(!app.restore())
-                                    app.addArticles(true);
+                                    app.addArticles(firstOnNewSale);
                             });
                         }
                         else {
@@ -121,7 +124,7 @@ const SalePage = {
         },
         addArticles(firstOnNewSale) {
             var app = this;
-            app.$refs.articleChooser.open(app.sale, app.person).then(modifications => {
+            app.$refs.articleChooser.open(app.sale, app.person, firstOnNewSale).then(modifications => {
                 if(modifications) {
                     app.sale.articles = modifications;
                     console.log("add articles after", app.sale.articles);
@@ -158,12 +161,13 @@ const SalePage = {
                 });
             }
         },
-        pay() {
+        pay(amountJustCredit) {
             var app = this;
             app.syncing = true;
+
             app.sale.save().then(()=> {
                 app.syncing = false;
-                router.push({ path: "/pay/" + app.sale._id });
+                router.push({ path: "/pay/" + app.sale._id, query: { jc: amountJustCredit } });
             });
         },
         payWCredit() {
@@ -186,7 +190,7 @@ const SalePage = {
             var app = this;
 
             //check if there is already credit article
-            var sa = (app.sale.articles || []).find(sa => sa.article._id === "credit");
+            /*var sa = (app.sale.articles || []).find(sa => sa.article._id === "credit");
             var text = "Guthaben im Wert von € kaufen"
             var price = 0;
             if(sa) {
@@ -216,6 +220,13 @@ const SalePage = {
                     });
                 }
                 app.calculate();
+                app.pay();
+            });*/
+
+            app.$refs.inp.open(0, "Guthaben im Wert von € kaufen").then(val => { 
+                val = parseFloat(val);
+                if(val > 0) 
+                    app.pay(val);                
             });
         },
         openPerson() {

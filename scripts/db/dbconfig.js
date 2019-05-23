@@ -46,6 +46,27 @@ class DbConfig {
         return storage.get("group");
     }
 
+    static sync(localDb, remoteDb, name) {
+        return new Promise((resolve, reject) => {
+            console.log("start "+name+"Sync");
+            $(document).trigger("dbSyncStart", { db: name });
+
+            localDb.sync(remoteDb)
+                .then(() => {
+                    console.log("completed "+name+"Sync");
+                    $(document).trigger("dbSyncStop", { db: name });
+                    resolve();
+                });
+        });
+    }
+
+    static setupLiveSync() {
+        console.log("setup Live Sync");
+        DbConfig.personsDb.sync(DbConfig.remotePersonsDb,{ live: true, retry: true }).on("change", ()=> $(document).trigger("dbChanged", { db: "persons" }));
+        DbConfig.articlesDb.sync(DbConfig.remoteArticlesDb,{ live: true, retry: true}).on("change", ()=> $(document).trigger("dbChanged", { db: "articles" }));
+        DbConfig.actSalesDb.sync(DbConfig.remoteActSalesDb,{ live: true, retry: true}).on("change", ()=> $(document).trigger("dbChanged", { db: "actSales" }));
+    }
+
     static initDb() {
         return new Promise((resolve,reject) => {
 
@@ -62,42 +83,23 @@ class DbConfig {
                 DbConfig.remoteAllSalesDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ALLSALESDBNAME}`);
                 DbConfig.remoteActSalesDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ACTSALESDBNAME}`);
 
-                console.log("start personSync");
-                DbConfig.personsDb.sync(DbConfig.remotePersonsDb, { batch_size: 300})
-                    .on("complete", () => {
-                        console.log("completed personSync");
-                        console.log("start articleSync");
-                        DbConfig.articlesDb.sync(DbConfig.remoteArticlesDb, { batch_size: 300})
-                            .on("complete", () => {
-                                console.log("completed articleSync");
-                                console.log("start actSalesSync");
-                                DbConfig.actSalesDb.sync(DbConfig.remoteActSalesDb, { batch_size: 300})
-                                    .on("complete", () => {
-                                        console.log("completed actSalesSync");
-                                        
-                                        //setup live sync
-                                        DbConfig.personsDb.sync(DbConfig.remotePersonsDb,{ live: true}).on("change", () => { console.log("changes in persons"); });
-                                        DbConfig.articlesDb.sync(DbConfig.remoteArticlesDb,{ live: true}).on("change", () => { console.log("changes in articles") });
-                                        DbConfig.actSalesDb.sync(DbConfig.remoteActSalesDb,{ live: true}).on("change", () => { console.log("chanegs in actSales") });
+                Promise.all([
+                    DbConfig.sync(DbConfig.personsDb, DbConfig.remotePersonsDb, "persons"),
+                    DbConfig.sync(DbConfig.articlesDb, DbConfig.remoteArticlesDb, "articles"),
+                    DbConfig.sync(DbConfig.actSalesDb, DbConfig.remoteActSalesDb, "actSales")
+                ])
+                .then(() => {
+                    resolve(); //callback to ui
+                    DbConfig.setupLiveSync();
+                    return DbConfig.sync(DbConfig.allSalesDb, DbConfig.remoteAllSalesDb, "allSales");
+                })
+                .then(() => {
+                    //remove this line later
+                    Sale.migrateOpended();
 
-                                        resolve(); 
-                                        //start all sales sync but dont wait for it
-                                        console.log("start allSalesSync");
-                                        DbConfig.allSalesDb.sync(DbConfig.remoteAllSalesDb, { batch_size: 300})
-                                            .on("complete", () => {
-                                                console.log("completed allSalesSync");
-                                            })
-                                            .on("error", (err) => { console.log("error in allSalesSync", err) });
-
-                                        resolve();
-                                    })
-                                    .on("error", (err) => { console.log("error in articleSync", err) });
-
-                            })
-                            .on("error", (err) => { console.log("error in articleSync", err) });
-
-                    })
-                    .on("error", (err) => { console.log("error in personSync", err) });
+                    return DbConfig.allSalesDb.sync(DbConfig.remoteAllSalesDb,{ live: true, retry: true }).on("change", () => $(document).trigger("dbChanged", { db: "allSales" }));
+                })
+                .catch((err) => console.log("syncError", err));
             }
             else
                 resolve();
