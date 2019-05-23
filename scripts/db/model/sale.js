@@ -1,6 +1,6 @@
 class Sale extends BaseModel {
     constructor(db) {
-        super(DbConfig.saleDb)        
+        super(DbConfig.actSalesDb)        
         this.person = null; 
         this.articles = [];
         /*
@@ -96,8 +96,8 @@ class Sale extends BaseModel {
         return parseInt(moment(this.saleDate, "DD.MM.YYYY HH:mm:ss").format("YYYYMMDD"),10);
     }
 
-    static getList() {
-        return Db.getList(DbConfig.saleDb, Sale, (a,b)=> {
+    static getList(db) {
+        return Db.getList(db || DbConfig.actSalesDb, Sale, (a,b)=> {
             return 0;
         });
     }
@@ -105,7 +105,12 @@ class Sale extends BaseModel {
     static getListFiltered(filter) {
         var _this = this;
         return new Promise((resolve,reject) => {
+            
+            performance.mark("saleListFiltered_getList");
+
             _this.getList().then(allSales => {
+                performance.measure("saleListFiltered_getList", "saleListFiltered_getList");
+                performance.mark("saleListFiltered_filter");
 
                 if(filter.day === moment().format("DD.MM.YYYY")) {
                     //toda: get all opened + all done for today
@@ -119,6 +124,8 @@ class Sale extends BaseModel {
                 _this.sortSales(allSales);
                 _this.addSpecialProperties(allSales);
 
+                performance.measure("saleListFiltered_filter", "saleListFiltered_filter");
+                console.log(performance.getEntriesByType("measure"));
                 resolve(allSales);
             });
         });
@@ -153,13 +160,21 @@ class Sale extends BaseModel {
     }
 
     static get(id) {
-        return Db.getEntity(DbConfig.saleDb, Sale, id);
+        return new Promise((resolve, reject) => {
+            Db.getEntity(DbConfig.actSalesDb, Sale, id)
+                .then(x => resolve(x))
+                .catch(() => {
+                    Db.getEntity(DbConfig.allSalesDb, Sale, id)
+                        .then(x => resolve(x))
+                        .catch(() => reject());        
+                });
+        });
     }
 
     static getDayList() {
         var _this = this;
         return new Promise((resolve,reject) => {
-            _this.getList().then(allSales => {
+            _this.getList(DbConfig.allSalesDb).then(allSales => {
                 var dayList = [];
 
                 allSales.forEach(sale => {
@@ -208,7 +223,7 @@ class Sale extends BaseModel {
 
         return new Promise((resolve,reject) => {
             performance.mark("calculateTops");
-            _this.getList().then(allSales => {
+            _this.getList(DbConfig.allSalesDb).then(allSales => {
                 
                 var topSales = allSales.filter(sale => sale.saleDateAsNr >= referenceDayAsNr);
                 Person.getList().then(persons => {
@@ -266,7 +281,7 @@ class Sale extends BaseModel {
                             }
                         });
 
-                        DbConfig.personDb.bulkDocs(bulk).then(() => {
+                        DbConfig.personsDb.bulkDocs(bulk).then(() => {
                             performance.measure("calculateTops", "calculateTops");
                             console.log(performance.getEntriesByType("measure"));
                             resolve();

@@ -6,12 +6,12 @@ class SaleImport {
 
     clean() {
         var _this = this;
-        return Db.deleteAll(DbConfig.saleDb).then(() => console.log("deleted"), () => console.log("error on delete all"));
+        return Db.deleteAll(DbConfig.allSalesDb).then(() => console.log("deleted"), () => console.log("error on delete all"));
     }
 
     cleanAndLoad() {
         var _this = this;
-        return Db.deleteAll(DbConfig.saleDb).then(() => { console.log("deleted"); _this.load(); }, () => console.log("error on delete all"));
+        return Db.deleteAll(DbConfig.allSalesDb).then(() => { console.log("deleted"); _this.load(); }, () => console.log("error on delete all"));
     }
 
     load() {
@@ -94,7 +94,7 @@ class SaleImport {
                     }
                 });
 
-                DbConfig.saleDb.bulkDocs(bulk).then(() => {
+                DbConfig.allSalesDb.bulkDocs(bulk).then(() => {
                     Sale.calculateTops().then(resolve);
                 });
             });            

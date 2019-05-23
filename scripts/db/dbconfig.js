@@ -1,18 +1,18 @@
 class DbConfig {
     
-    static REPLICATED = false;
-    static USESYNC = true;
-    
-    static PERSONDBNAME = "persons";
-    static ARTICLEDBNAME = "articles";
-    static SALEDBNAME = "sales";
+    static PERSONSDBNAME = "persons";
+    static ARTICLESDBNAME = "articles";
+    static ALLSALESDBNAME = "sales";
+    static ACTSALESDBNAME = "actsales";
 
-    static personDb = null;
-    static remotePersonDb = null;
-    static articleDb = null;
-    static remoteArticleDb = null;
-    static saleDb = null;
-    static remoteSaleDb = null;
+    static personsDb = null;
+    static remotePersonsDb = null;
+    static articlesDb = null;
+    static remoteArticlesDb = null;
+    static allSalesDb = null;
+    static remoteAllSalesDb = null;
+    static actSalesDb = null;
+    static remoteActSalesDb = null;
     
     constructor() {
     }
@@ -49,34 +49,55 @@ class DbConfig {
     static initDb() {
         return new Promise((resolve,reject) => {
 
-            if(DbConfig.personDb === null && DbConfig.getGroupInfo()) {
+            if(DbConfig.personsDb === null && DbConfig.getGroupInfo()) {
                 var groupInfo = DbConfig.getGroupInfo();
                 
-                DbConfig.personDb = new PouchDB(`${groupInfo.db}-${DbConfig.PERSONDBNAME}`);
-                DbConfig.articleDb = new PouchDB(`${groupInfo.db}-${DbConfig.ARTICLEDBNAME}`);
-                DbConfig.saleDb = new PouchDB(`${groupInfo.db}-${DbConfig.SALEDBNAME}`);
-                
-                if(DbConfig.USESYNC) {
-                    DbConfig.remotePersonDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.PERSONDBNAME}`)
-                    DbConfig.remoteArticleDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ARTICLEDBNAME}`)
-                    DbConfig.remoteSaleDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.SALEDBNAME}`)
-                
-                    DbConfig.personDb.sync(DbConfig.remotePersonDb).on("complete", () => {
-                        DbConfig.articleDb.sync(DbConfig.remoteArticleDb).on("complete", () => {
-                            DbConfig.saleDb.sync(DbConfig.remoteSaleDb).on("complete", () => {
+                DbConfig.personsDb = new PouchDB(`${groupInfo.db}-${DbConfig.PERSONSDBNAME}`);
+                DbConfig.articlesDb = new PouchDB(`${groupInfo.db}-${DbConfig.ARTICLESDBNAME}`);
+                DbConfig.allSalesDb = new PouchDB(`${groupInfo.db}-${DbConfig.ALLSALESSDBNAME}`);
+                DbConfig.actSalesDb = new PouchDB(`${groupInfo.db}-${DbConfig.ACTSALESDBNAME}`);
+                                
+                DbConfig.remotePersonsDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.PERSONSDBNAME}`);
+                DbConfig.remoteArticlesDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ARTICLESDBNAME}`);
+                DbConfig.remoteAllSalesDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ALLSALESDBNAME}`);
+                DbConfig.remoteActSalesDb = new PouchDB(`${groupInfo.url}${groupInfo.db}-${DbConfig.ACTSALESDBNAME}`);
 
-                                //setup live sync
-                                DbConfig.personDb.sync(DbConfig.remotePersonDb,{ live: true}).on("change", () => {  });
-                                DbConfig.articleDb.sync(DbConfig.remoteArticleDb,{ live: true}).on("change", () => {  });
-                                DbConfig.saleDb.sync(DbConfig.remoteSaleDb,{ live: true}).on("change", () => {  });
+                console.log("start personSync");
+                DbConfig.personsDb.sync(DbConfig.remotePersonsDb, { batch_size: 300})
+                    .on("complete", () => {
+                        console.log("completed personSync");
+                        console.log("start articleSync");
+                        DbConfig.articlesDb.sync(DbConfig.remoteArticlesDb, { batch_size: 300})
+                            .on("complete", () => {
+                                console.log("completed articleSync");
+                                console.log("start actSalesSync");
+                                DbConfig.actSalesDb.sync(DbConfig.remoteActSalesDb, { batch_size: 300})
+                                    .on("complete", () => {
+                                        console.log("completed actSalesSync");
+                                        
+                                        //setup live sync
+                                        DbConfig.personsDb.sync(DbConfig.remotePersonsDb,{ live: true}).on("change", () => { console.log("changes in persons"); });
+                                        DbConfig.articlesDb.sync(DbConfig.remoteArticlesDb,{ live: true}).on("change", () => { console.log("changes in articles") });
+                                        DbConfig.actSalesDb.sync(DbConfig.remoteActSalesDb,{ live: true}).on("change", () => { console.log("chanegs in actSales") });
 
-                                resolve();
-                            });
-                        });
-                    });
-                }
-                else
-                    resolve();
+                                        resolve(); 
+                                        //start all sales sync but dont wait for it
+                                        console.log("start allSalesSync");
+                                        DbConfig.allSalesDb.sync(DbConfig.remoteAllSalesDb, { batch_size: 300})
+                                            .on("complete", () => {
+                                                console.log("completed allSalesSync");
+                                            })
+                                            .on("error", (err) => { console.log("error in allSalesSync", err) });
+
+                                        resolve();
+                                    })
+                                    .on("error", (err) => { console.log("error in articleSync", err) });
+
+                            })
+                            .on("error", (err) => { console.log("error in articleSync", err) });
+
+                    })
+                    .on("error", (err) => { console.log("error in personSync", err) });
             }
             else
                 resolve();
@@ -85,11 +106,13 @@ class DbConfig {
 
     static logout() {
         storage.clear("group");
-        DbConfig.personDb = null;
-        DbConfig.articleDb = null;
-        DbConfig.saleDb = null;
-        DbConfig.remotePersonDb = null;
-        DbConfig.remoteArticleDb = null;
-        DbConfig.remoteSaleDb = null;
+        DbConfig.personsDb = null;
+        DbConfig.articlesDb = null;
+        DbConfig.actSalesDb = null;
+        DbConfig.allSalesDb = null;
+        DbConfig.remotePersonsDb = null;
+        DbConfig.remoteArticlesDb = null;
+        DbConfig.remoteActSalesDb = null;    
+        DbConfig.remoteAllSalesDb = null;    
     }
 }

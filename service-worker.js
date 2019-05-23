@@ -22,7 +22,8 @@ if (workbox) {
     'https://code.jquery.com/jquery-3.4.0.min.js',
     'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
     'https://unpkg.com/vue-router/dist/vue-router.js', 
-    'https://cdn.jsdelivr.net/pouchdb/5.4.5/pouchdb.min.js'
+    'https://cdn.jsdelivr.net/pouchdb/5.4.5/pouchdb.min.js',
+    'https://unpkg.com/pouchdb@7.0.0/dist/pouchdb.find.js'
   ]);
 
   

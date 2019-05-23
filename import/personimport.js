@@ -54,7 +54,7 @@ class PersonImport {
                     }
                 });
 
-                DbConfig.personDb.bulkDocs(bulk);
+                DbConfig.personsDb.bulkDocs(bulk);
 
                 resolve();
             });            

@@ -1,6 +1,6 @@
 class Article extends BaseModel {
     constructor(db) {
-        super(DbConfig.articleDb)
+        super(DbConfig.articlesDb)
         this.title = "";
         this.type = "";
         this.price = 0.0;
@@ -20,7 +20,7 @@ class Article extends BaseModel {
 
         //TODO get person from sale and sort/filter by person specific TOP
 
-        return Db.getList(DbConfig.articleDb, Article, (a,b)=> {
+        return Db.getList(DbConfig.articlesDb, Article, (a,b)=> {
             if(tab === "top") {
                 
                 var ac = 0;
@@ -58,6 +58,6 @@ class Article extends BaseModel {
     }
 
     static get(id) {
-        return Db.getEntity(DbConfig.articleDb, Article, id);
+        return Db.getEntity(DbConfig.articlesDb, Article, id);
     }
 }

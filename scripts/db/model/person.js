@@ -1,6 +1,6 @@
 class Person extends BaseModel {
     constructor(db) {
-        super(DbConfig.personDb)
+        super(DbConfig.personsDb)
         this.firstName = "";
         this.lastName = "";
         this.phoneNr = "";
@@ -49,12 +49,12 @@ class Person extends BaseModel {
     }
 
     static get(id) {
-        return Db.getEntity(DbConfig.personDb, Person, id);
+        return Db.getEntity(DbConfig.personsDb, Person, id);
     }
 
     static getList(search, tab, mode) {
         
-        return Db.getList(DbConfig.personDb, Person, (a,b)=> {
+        return Db.getList(DbConfig.personsDb, Person, (a,b)=> {
             if(tab === "top") {
                 if (a.topSaleCount < b.topSaleCount)
                     return 1;

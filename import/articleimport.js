@@ -61,7 +61,7 @@ class ArticleImport {
                 });
 
                 console.log("bulkdocs", bulk);
-                DbConfig.articleDb.bulkDocs(bulk);
+                DbConfig.articlesDb.bulkDocs(bulk);
 
                 resolve();
             });            
