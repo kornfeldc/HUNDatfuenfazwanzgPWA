@@ -95,11 +95,12 @@ const SalesPage = {
         },
         load() {
             var app = this;
+            console.log("start load sales");
             app.syncing=true;            
             Sale.getListFiltered({ day: app.day }).then(sales => {
                 app.sales = sales;      
                 app.syncing=false;
-            });
+            }).catch((err) => console.log("error on getting sales", err));
         },
         open(entry) {
             router.push({ path: 'sale/'+ (entry && entry._id ? entry._id : '_') });

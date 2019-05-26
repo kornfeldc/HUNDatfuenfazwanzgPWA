@@ -56,7 +56,8 @@ class DbConfig {
                     console.log("completed "+name+"Sync");
                     $(document).trigger("dbSyncStop", { db: name });
                     resolve();
-                });
+                })
+                .catch(() => reject());
         });
     }
 
@@ -69,10 +70,12 @@ class DbConfig {
 
     static initDb() {
         return new Promise((resolve,reject) => {
-
+            
             if(DbConfig.personsDb === null && DbConfig.getGroupInfo()) {
                 var groupInfo = DbConfig.getGroupInfo();
                 
+                console.log("initDb");
+
                 DbConfig.personsDb = new PouchDB(`${groupInfo.db}-${DbConfig.PERSONSDBNAME}`);
                 DbConfig.articlesDb = new PouchDB(`${groupInfo.db}-${DbConfig.ARTICLESDBNAME}`);
                 DbConfig.allSalesDb = new PouchDB(`${groupInfo.db}-${DbConfig.ALLSALESSDBNAME}`);
@@ -89,17 +92,25 @@ class DbConfig {
                     DbConfig.sync(DbConfig.actSalesDb, DbConfig.remoteActSalesDb, "actSales")
                 ])
                 .then(() => {
+                    console.log("initDb Promises fullfilled");
                     resolve(); //callback to ui
                     DbConfig.setupLiveSync();
                     return DbConfig.sync(DbConfig.allSalesDb, DbConfig.remoteAllSalesDb, "allSales");
                 })
                 .then(() => {
+                    console.log("initDb allSales done");
+
                     //remove this line later
                     Sale.migrateOpended();
 
                     return DbConfig.allSalesDb.sync(DbConfig.remoteAllSalesDb,{ live: true, retry: true }).on("change", () => $(document).trigger("dbChanged", { db: "allSales" }));
                 })
-                .catch((err) => console.log("syncError", err));
+                .catch((err) => { 
+                    console.log("syncError", err); 
+                    resolve(); 
+                    DbConfig.setupLiveSync(); 
+                    DbConfig.allSalesDb.sync(DbConfig.remoteAllSalesDb,{ live: true, retry: true }).on("change", () => $(document).trigger("dbChanged", { db: "allSales" })); 
+                });
             }
             else
                 resolve();

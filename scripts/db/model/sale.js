@@ -200,7 +200,7 @@ class Sale extends BaseModel {
             var getter = filter.day === moment().format("DD.MM.YYYY") ?
                 Sale.cleanAndGetActList :
                 Sale.getAllSalesList;
-
+            console.log("get sales with method", getter);
             getter().then(allSales => {
                 performance.measure("saleListFiltered_getList", "saleListFiltered_getList");
                 performance.mark("saleListFiltered_filter");
@@ -220,7 +220,7 @@ class Sale extends BaseModel {
                 performance.measure("saleListFiltered_filter", "saleListFiltered_filter");
                 console.log(performance.getEntriesByType("measure"));
                 resolve(allSales);
-            });
+            }).catch((err) => console.log("ERROR - Sale.getListFiltered", err));
         });
     }
 
