@@ -6,14 +6,14 @@ Vue.component('modal-input', {
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">{{title}}</p>
-                <button class="delete" aria-label="close" @click="cancel"></button>
+                <button class="delete" aria-label="close" @click="vibrate();cancel();"></button>
             </header>
             <section class="modal-card-body" v-if="render">
                 <input class="input" ref="inp" type="number" v-model:value="value" @keyup.enter="save"/>
             </section>
             <footer class="modal-card-foot">
-                <button-primary @click="save">OK</button-primary>
-                <button-cancel @click="cancel"/>
+                <button-primary @click="vibrate();save();">OK</button-primary>
+                <button-cancel @click="vibrate();cancel();"/>
             </footer>
         </div>
     </div>

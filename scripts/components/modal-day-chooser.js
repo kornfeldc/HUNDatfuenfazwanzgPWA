@@ -6,11 +6,11 @@ Vue.component('modal-day-chooser', {
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">Tag auswählen</p>
-                <button class="delete" aria-label="close" @click="cancel"></button>
+                <button class="delete" aria-label="close" @click="vibrate();cancel();"></button>
             </header>
             <section class="modal-card-body" v-if="render">
                 <template v-if="$root.syncInfo.allSales==='idle'" v-for="day in dayList">
-                    <div class="columns is-mobile is-vcentered hover" @click="selectDay(day.day);">
+                    <div class="columns is-mobile is-vcentered hover" @click="vibrate();selectDay(day.day);">
                         <div class="column">
                             {{day.dayText}}    
                         </div>
@@ -25,8 +25,8 @@ Vue.component('modal-day-chooser', {
                 <a v-if="$root.syncInfo.allSales==='syncing'" class="button is-loading is-large is-fullwidth is-link is-outlined" style="border:0">Loading</a>
             </section>
             <footer class="modal-card-foot">
-                <button-primary @click="today">Heute</button-primary>
-                <button-cancel @click="cancel"/>
+                <button-primary @click="vibrate();today();">Heute</button-primary>
+                <button-cancel @click="vibrate();cancel();"/>
             </footer>
         </div>
     </div>

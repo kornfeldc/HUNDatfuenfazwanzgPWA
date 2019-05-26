@@ -6,26 +6,30 @@ Vue.component('modal-person-chooser', {
         <div class="modal-card">
         <header class="modal-card-head">
             <p class="modal-card-title">Person auswählen</p>
-            <button class="delete" aria-label="close" @click="cancel"></button>
+            <button class="delete" aria-label="close" @click="vibrate();cancel();"></button>
         </header>
         <section class="modal-card-body">
             <search v-model="search" @changed="load" />
             <div class="tabs" v-if="!search || search.length == 0">
                 <ul>
-                    <li v-for="t in types" :class="(tab == t.id ? 'is-active':'')"><a @click="tab = t.id">{{t.shortTitle}}</a></li>
+                    <li v-for="t in types" :class="(tab == t.id ? 'is-active':'')"><a @click="vibrate();tab = t.id;">{{t.shortTitle}}</a></li>
                 </ul>
             </div>
-            <person-line :person="barPerson" v-on:click="choose(barPerson)"/>
-            <person-line v-for="entry in persons" :person="entry" v-on:click="choose(entry)" :key="entry._id" mode="chooser"/>
+            
+            <v-touch v-on:swipeleft="onSwipe(1,$event)" v-on:swiperight="onSwipe(-1,$event)">
 
-            <div v-if="search" class="columns is-mobile is-vcentered hover" @click="createPerson();">
-                <div class="column">
-                    <i style='min-width:30px;text-align:center' :class="'fa fa-plus f180 has-text-link' "  />
+                <person-line :person="barPerson" v-on:click="choose(barPerson)"/>
+                <person-line v-for="entry in persons" :person="entry" v-on:click="choose(entry)" :key="entry._id" mode="chooser"/>
+
+                <div v-if="search" class="columns is-mobile is-vcentered hover" @click="vibrate();createPerson();">
+                    <div class="column">
+                        <i style='min-width:30px;text-align:center' :class="'fa fa-plus f180 has-text-link' "  />
+                    </div>
+                    <div class="column is-full">
+                        <h4 class="title is-5">"{{search}}" neu anlegen</h4>
+                    </div>
                 </div>
-                <div class="column is-full">
-                    <h4 class="title is-5">"{{search}}" neu anlegen</h4>
-                </div>
-            </div>
+            </v-touch>
 
         </section>
         </div>
@@ -92,6 +96,12 @@ Vue.component('modal-person-chooser', {
         createPerson() {
             var app = this;
             router.push({ path: '/person/_', query: { name: app.search, fs: true } });
+        },
+        onSwipe(dir,evt) {
+            var app = this;
+            evt.srcEvent.stopPropagation();
+            evt.srcEvent.preventDefault();
+            return false;
         }
     }
  });

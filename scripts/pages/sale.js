@@ -3,12 +3,12 @@ const SalePage = {
     template: `
     <page-container :syncing="syncing">
         <div class="above_actions" v-if="sale.person && render">
-            <sale-person :sale="sale" :person="person" @click="openPerson"/>
+            <sale-person :sale="sale" :person="person" @click="vibrate();openPerson();"/>
 
             <div class="box">
                 <div class="media p-1">
                     <div class="media-content">
-                        Summe <button class="ml-std button is-small is-outlined is-link" @click="addArticles" v-if="!sale.isPayed">Artikel hinzufügen</button>
+                        Summe <button class="ml-std button is-small is-outlined is-link" @click="vibrate();addArticles();" v-if="!sale.isPayed">Artikel hinzufügen</button>
                     </div>
                     <div class="media-right title is-5">
                         {{format(sale.articleSum)}}
@@ -26,19 +26,19 @@ const SalePage = {
         <div class="actions" v-if="sale.person">
             <div class="field is-grouped">
                 <div class="control">
-                    <button-primary @click="save">OK</button-primary>
+                    <button-primary @click="vibrate();save();">OK</button-primary>
                 </div>
                 <div class="control" v-if="sale.articleSum != 0 && !sale.isPayed">
-                    <button-success @click="pay">Zahlen</button-success>
+                    <button-success @click="vibrate();pay();">Zahlen</button-success>
                 </div>
                 <!--<div class="control" v-if="sale.articleSum != 0 && person.credit >= sale.articleSum && !sale.isPayed">
-                    <button-success-inverted @click="payWCredit">Alles mit Guthaben zahlen</button-success-inverted>
+                    <button-success-inverted @click="vibrate();payWCredit();">Alles mit Guthaben zahlen</button-success-inverted>
                 </div>-->
                 <div class="control">
-                    <button-cancel @click="cancel"/>
+                    <button-cancel @click="vibrate();cancel();"/>
                 </div>
                 <div class="control">
-                    <button-danger-inverted @click="remove">
+                    <button-danger-inverted @click="vibrate();remove();">
                         <span class="icon is-small">
                         <i class="fas fa-trash"></i>
                         </span>

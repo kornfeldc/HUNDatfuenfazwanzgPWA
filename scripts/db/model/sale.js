@@ -163,6 +163,10 @@ class Sale extends BaseModel {
         return this.saleDateDay  === moment().format("DD.MM.YYYY");
     }
 
+    get isAct() {
+        return this.isToday || !this.isPayed;
+    }
+
     get salePayDateDay() {
         if(this.payDate !== null)
             return moment(this.payDate,"DD.MM.YYYY HH:mm:SS").format("DD.MM.YYYY");
@@ -384,11 +388,11 @@ class Sale extends BaseModel {
 
     static cleanAndGetActList() {
         return new Promise((resolve, reject) => {
-            Sale.getList().then(actSales => {
+            Sale.getList(DbConfig.actSalesDb).then(actSales => {
                 var retSales = [];
                 var deleteSales = [];
                 (actSales||[]).forEach(sale => {
-                    if(!sale.isPayed || (sale.isPayed && sale.isToday)) 
+                    if(sale.isAct) 
                         retSales.push(sale);
                     else {
                         sale._deleted = true;
@@ -411,11 +415,12 @@ class Sale extends BaseModel {
     static migrateOpended() {
         Sale.getAllSalesList().then(allSales => {
             Sale.cleanAndGetActList().then(actSales => {
-                var filteredAll = allSales.filter(as => !as.isPayed);
+                var filteredAll = allSales.filter(as => as.isAct);
                 filteredAll.forEach(fa => {
                     if(!actSales.find(as => as._id === fa._id)) {
                         //copy from all sale to act sale
                         var copiedSale = fa.copy(DbConfig.actSalesDb);
+                        console.log("sale for migration", copiedSale);
                         DbConfig.actSalesDb.put(copiedSale.toObj());
                     }
                 });

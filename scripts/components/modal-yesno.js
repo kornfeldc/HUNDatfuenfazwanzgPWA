@@ -6,14 +6,14 @@ Vue.component('modal-yesno', {
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">{{title}}</p>
-                <button class="delete" aria-label="close" @click="no"></button>
+                <button class="delete" aria-label="close" @click="vibrate();no();"></button>
             </header>
             <section class="modal-card-body" v-if="render">
                 {{text}}
             </section>
             <footer class="modal-card-foot">
-                <button-primary @click="yes">Ja</button-primary>
-                <button-text @click="no">Nein</button-text>
+                <button-primary @click="vibrate();yes();">Ja</button-primary>
+                <button-text @click="vibrate();no();">Nein</button-text>
             </footer>
         </div>
     </div>

@@ -6,23 +6,23 @@ Vue.component('modal-article-chooser', {
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">Artikel hinzufügen</p>
-                <button class="delete" aria-label="close" @click="cancel"></button>
+                <button class="delete" aria-label="close" @click="vibrate();cancel();"></button>
             </header>
             <section class="modal-card-body" v-if="render">
                 <search v-model="search" @changed="load" />
                 <div class="tabs" v-if="!search || search.length == 0">
                     <ul>
-                        <li :class="(tab == 'top' ? 'is-active':'')"><a @click="tab = 'top'">TOP</a></li>
-                        <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="tab = 'favorites'">Favoriten</a></li>
-                        <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="tab = at.id">{{at.shortTitle}}</a></li>
+                        <li :class="(tab == 'top' ? 'is-active':'')"><a @click="vibrate();tab = 'top';">TOP</a></li>
+                        <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="vibrate();tab = 'favorites';">Favoriten</a></li>
+                        <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="vibrate();tab = at.id;">{{at.shortTitle}}</a></li>
                     </ul>
                 </div>
                 <sale-article-line v-for="article in articles" :article="article" :sale="sale" :key="article._id" @modify="(article,amount)=>modify(article,amount)"/>
             </section>
             <footer class="modal-card-foot">
-                <button-primary @click="ok">OK</button-primary>
-                <button-primary-inverted @click="addCredit" v-if="!person.isBar && firstOnNewSale">Nur Guthaben kaufen</button-primary-inverted>
-                <button-cancel @click="cancel"/>
+                <button-primary @click="vibrate();ok();">OK</button-primary>
+                <button-primary-inverted @click="vibrate();addCredit();" v-if="!person.isBar && firstOnNewSale">Nur Guthaben kaufen</button-primary-inverted>
+                <button-cancel @click="vibrate();cancel();"/>
             </footer>
         </div>
     </div>

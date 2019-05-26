@@ -6,16 +6,16 @@ const ArticlesPage = {
             <search v-model="search" @changed="load" />
             <div class="tabs" v-if="!search || search.length == 0">
                 <ul>
-                    <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="tab = 'favorites'">Favoriten</a></li>
-                    <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="tab = at.id">{{at.shortTitle}}</a></li>
+                    <li :class="(tab == 'favorites' ? 'is-active':'')"><a @click="vibrate();tab = 'favorites';">Favoriten</a></li>
+                    <li v-for="at in articleTypes" :class="(tab == at.id ? 'is-active':'')"><a @click="vibrate();tab = at.id;">{{at.shortTitle}}</a></li>
                 </ul>
             </div>
-            <article-line v-for="entry in articles" :article="entry" v-on:click="open(entry)" :key="entry._id"/>
+            <article-line v-for="entry in articles" :article="entry" v-on:click="vibrate();open(entry);" :key="entry._id"/>
         </div>
         <div class="actions">
             <div class="field">
                 <div class="control">
-                    <button-primary @click="open">Neuer Artikel</button-primary>
+                    <button-primary @click="vibrate();open();">Neuer Artikel</button-primary>
                 </div>
             </div>
         </div>

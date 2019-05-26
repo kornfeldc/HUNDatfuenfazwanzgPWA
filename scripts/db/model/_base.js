@@ -25,6 +25,7 @@ class BaseModel {
         this.checkMap();
         if(this.doc) {
             this.map.forEach(property => _this.doc[property] = _this[property]);
+            _this.doc._deleted = _this._deleted;
         }
         return this.doc;
     }

@@ -1,5 +1,5 @@
 //start service worker
-const VERSION ="1.0.8";
+const VERSION ="1.1.0";
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
@@ -48,6 +48,7 @@ new Vue({
     },
     created() {
         var app = this;
+        console.log("app created", this);
         moment.locale("de");
 
         $(document).on("dbSyncStart", (evt,options) => {

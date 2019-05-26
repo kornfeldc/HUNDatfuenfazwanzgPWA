@@ -19,13 +19,16 @@ var sessionMixin = {
             syncing: false
         }
     },
+    created() {
+        console.log("created",this);
+    },
     mounted() {
         var app = this;
-        
+        console.log("mounted",this);
         if(!DbConfig.isLoggedIn()) {
             app.$parent.isLoggedIn = false;
             try { app.$parent.$parent.isLoggedIn = false; } catch(e) {}
-            router.push({path: "/login"});
+            router.replace("/login");
         }
         else {
             app.$parent.isLoggedIn = true;
@@ -37,17 +40,14 @@ var sessionMixin = {
             }
             catch(e) {}
 
-            //init db
-            //if(app.isMainPage) {
-                app.syncing = true;
-                DbConfig.initDb().then(()=> {
-                    app.syncing = false;
-                    if(app.initDone)
-                        app.initDone();
-                });
-            //}
-            //else if(app.initDone)
-              //  app.initDone();
+            console.log("start init");
+
+            app.syncing = true;
+            DbConfig.initDb().then(()=> {
+                app.syncing = false;
+                console.log("call initDone");
+                app.initDone && app.initDone();
+            });
         }
     }
 }
@@ -63,6 +63,10 @@ var utilMixins = {
             j = (j = i.length) > 3 ? j % 3 : 0;
 
             return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+        },
+        vibrate() {
+            navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+            navigator.vibrate && navigator.vibrate(100);
         }
     }
 }

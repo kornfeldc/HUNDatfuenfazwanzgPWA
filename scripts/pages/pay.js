@@ -23,26 +23,26 @@ const PayPage = {
             <div class="px-std columns is-mobile is-vcentered">
                 <div class="column  is-centered" style="text-align:center">
                     <div class="title is-6">inkl. Trinkggeld</div>
-                    <div :class="'subtitle is-2 '+ getColor('inclTip',sale.inclTip)" @click="openInput('inclTip')">{{format(sale.inclTip)}}</div>
+                    <div :class="'subtitle is-2 '+ getColor('inclTip',sale.inclTip)" @click="vibrate();openInput('inclTip')">{{format(sale.inclTip)}}</div>
                     <div>
-                        <button class="button is-rounded is-danger" @click="modify('inclTip','-')">-</button>
-                        <button class="button is-rounded is-success" @click="modify('inclTip','+')">+</button>
+                        <button class="button is-rounded is-danger" @click="vibrate();modify('inclTip','-')">-</button>
+                        <button class="button is-rounded is-success" @click="vibrate();modify('inclTip','+')">+</button>
                     </div>
                 </div>
                 <div class="column  is-centered" style="text-align:center">
                     <div class="title is-6">gegeben</div>
-                    <div :class="'subtitle is-2 '+ getColor('given',sale.given)" @click="openInput('given')">{{format(sale.given)}}</div>
+                    <div :class="'subtitle is-2 '+ getColor('given',sale.given)" @click="vibrate();openInput('given')">{{format(sale.given)}}</div>
                     <div>
-                        <button class="button is-rounded is-danger" @click="modify('given','-')">-</button>
-                        <button class="button is-rounded is-success" @click="modify('given','+')">+</button>
+                        <button class="button is-rounded is-danger" @click="vibrate();modify('given','-')">-</button>
+                        <button class="button is-rounded is-success" @click="vibrate();modify('given','+')">+</button>
                     </div>
                 </div>
                 <div class="column  is-centered" style="text-align:center" v-if="!person.isBar">
                     <div class="title is-6">Guth. aufladen</div>
-                    <div :class="'subtitle is-2 '+ getColor('addAdditionalCredit',sale.addAdditionalCredit)" @click="openInput('addAdditionalCredit')">{{format(sale.addAdditionalCredit)}} </div>
+                    <div :class="'subtitle is-2 '+ getColor('addAdditionalCredit',sale.addAdditionalCredit)" @click="vibrate();openInput('addAdditionalCredit')">{{format(sale.addAdditionalCredit)}} </div>
                     <div>
-                        <button class="button is-rounded is-danger" @click="modify('addAdditionalCredit','-')">-</button>
-                        <button class="button is-rounded is-success" @click="modify('addAdditionalCredit','+')">+</button>
+                        <button class="button is-rounded is-danger" @click="vibrate();modify('addAdditionalCredit','-')">-</button>
+                        <button class="button is-rounded is-success" @click="vibrate();modify('addAdditionalCredit','+')">+</button>
                     </div>
                 </div>
             </div>
@@ -53,13 +53,13 @@ const PayPage = {
         <div class="actions">
             <div class="field is-grouped">
                 <div class="control" v-if="allowPay">
-                    <button-success @click="save">Fertig</button-success>
+                    <button-success @click="vibrate();save();">Fertig</button-success>
                 </div>
                 <div class="control">
-                    <button-primary-inverted v-if="toReturn > 0" @click="retourAsCredit">Retour als Guthaben</button-primary-inverted>
+                    <button-primary-inverted v-if="toReturn > 0" @click="vibrate();retourAsCredit();">Retour als Guthaben</button-primary-inverted>
                 </div>
                 <div class="control">
-                    <button-cancel @click="cancel"/>
+                    <button-cancel @click="vibrate();cancel();"/>
                 </div>
             </div>
         </div>

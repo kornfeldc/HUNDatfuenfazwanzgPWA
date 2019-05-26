@@ -5,7 +5,7 @@ const SalesPage = {
         <div class="above_actions">
             <div class="px-std columns is-mobile is-vcentered">
                 <div class="column is-full is-centered" style="text-align:center">
-                    <button class="button is-link is-rounded is-outlined" @click="chooseDay">{{dayText}}</button>
+                    <button class="button is-link is-rounded is-outlined" @click="vibrate();chooseDay();">{{dayText}}</button>
                 </div>
             </div>
             <template v-for="entry in sales">
@@ -25,7 +25,7 @@ const SalesPage = {
                         <p class="title is-5 has-text-success">{{format(sumPayed)}}</p>
                     </div>
                 </div>
-                <sale-line  :sale="entry" v-on:click="open(entry)" :key="entry._id"/>
+                <sale-line  :sale="entry" v-on:click="vibrate();open(entry)" :key="entry._id"/>
             </template>
 
             <div v-if="sales.length === 0" class="px-std columns is-mobile is-vcentered">
@@ -36,7 +36,7 @@ const SalesPage = {
                         Es gibt noch keine Verkäufe
                     </div>
                     <div>
-                        <button class="button is-link is-large" @click="open">Jetzt neuen Verkauf anlegen</button>
+                        <button class="button is-link is-large" @click="vibrate();open();">Jetzt neuen Verkauf anlegen</button>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@ const SalesPage = {
         <div class="actions" v-show="isToday && sales.length > 0">
             <div class="field is-grouped">
                 <div class="control">
-                    <button-primary @click="open">Neuer Verkauf</button-primary>
+                    <button-primary @click="vibrate();open();">Neuer Verkauf</button-primary>
                 </div>
             </div>
         </div>
@@ -77,6 +77,9 @@ const SalesPage = {
             app.sales.filter(s => s.isPayed).forEach(s => sum += s.articleSum);
             return sum;
         }
+    },
+    created() {
+        console.log("created");
     },
     methods: {
         initDone() {

@@ -12,7 +12,7 @@ const PersonPage = {
                     Bitte ausfüllen
                 </p>
             </div>
-            <div><i class="fas fa-exchange-alt" @click="switchName"/></div>
+            <div><i class="fas fa-exchange-alt" @click="vibrate();switchName();"/></div>
             <div class="field">
                 <label class="label">Nachname</label>
                 <div class="control">
@@ -63,16 +63,16 @@ const PersonPage = {
         <div class="actions">
             <div class="field is-grouped">
                 <div class="control">
-                    <button-primary @click="save">Speichern</button-primary>
+                    <button-primary @click="vibrate();save();">Speichern</button-primary>
                 </div>
                 <div class="control">
-                    <button-primary-inverted @click="addCredit">Guthaben +/-</button-primary-inverted>
+                    <button-primary-inverted @click="vibrate();addCredit();">Guthaben +/-</button-primary-inverted>
                 </div>
                 <div class="control">
-                    <button-cancel @click="cancel"/>
+                    <button-cancel @click="vibrate();cancel();"/>
                 </div>
                 <div class="control">
-                    <button-danger-inverted @click="remove">
+                    <button-danger-inverted @click="vibrate();remove();">
                         <span class="icon is-small">
                             <i class="fas fa-trash"></i>
                         </span>

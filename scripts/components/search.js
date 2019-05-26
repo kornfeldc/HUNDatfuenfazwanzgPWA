@@ -9,7 +9,7 @@ Vue.component('search', {
             </span>
         </div>
         <div class="control" v-if="val && val.length > 0">
-            <a class="button is-outlined is-danger" @click="clear">
+            <a class="button is-outlined is-danger" @click="vibrate();clear();">
                 <i class="fas fa-times"></i>
             </a>
         </div>

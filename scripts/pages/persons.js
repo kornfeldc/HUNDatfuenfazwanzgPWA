@@ -6,15 +6,15 @@ const PersonsPage = {
             <search v-model="search" @changed="load" />
             <div class="tabs" v-if="!search || search.length == 0">
                 <ul>
-                    <li v-for="t in types" :class="(tab == t.id ? 'is-active':'')"><a @click="tab = t.id">{{t.shortTitle}}</a></li>
+                    <li v-for="t in types" :class="(tab == t.id ? 'is-active':'')"><a @click="vibrate();tab = t.id;">{{t.shortTitle}}</a></li>
                 </ul>
             </div>
-            <person-line v-for="entry in persons" :person="entry" v-on:click="open(entry)" :key="entry._id"/>
+            <person-line v-for="entry in persons" :person="entry" v-on:click="vibrate();open(entry);" :key="entry._id"/>
         </div>
         <div class="actions">
             <div class="field">
                 <div class="control">
-                    <button-primary @click="open">Neue Person</button-primary>
+                    <button-primary @click="vibrate();open();">Neue Person</button-primary>
                 </div>
             </div>
         </div>
