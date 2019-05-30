@@ -127,3 +127,9 @@ html.has-navbar-fixed-top {
 .nli .navbar-burger {
   display: none;
 }
+.progress.fixed {
+  position: absolute;
+  bottom: 5rem;
+  width: 50%;
+  left: 25%;
+}
